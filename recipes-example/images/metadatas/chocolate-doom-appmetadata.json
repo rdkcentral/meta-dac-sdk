@@ -1,0 +1,24 @@
+{
+    "id": "com.rdk.chocolate-doom",
+    "type": "application/vnd.rdk-app.dac.native",
+    "version": "1.0.0",
+    "description": "chocolate-doom",
+    "priority": "optional",
+    "graphics": true,
+    "network": {
+        "type": "open"
+    },
+    "storage": {
+        "persistent": [
+            {
+                "size": "10M",
+                "path": "/home/root"
+            }
+        ]
+    },
+    "resources": {
+        "ram": "128M"
+    },
+    "features": [],
+    "mounts": []
+}

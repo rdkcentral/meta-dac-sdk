@@ -1,0 +1,88 @@
+From efd3806985882fcc9de09d9596b8863e3e7f4a57 Mon Sep 17 00:00:00 2001
+From: Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
+Date: Mon, 8 Jul 2019 10:56:35 +0200
+Subject: [PATCH] Add support for LD_PRELOAD/aliasing.
+
+On platforms where the LD_PRELOAD is used to overwrite functions
+it is needed to look first at the existing (preloaded/aliased) symbol
+instead of the real one from the shared library.
+
+For example on Broadcom Nexus platform the following libraries are preloaded:
+
+    - libwayland-egl.so.1
+    - libGLESv2.so
+
+where the libwayland-egl.so.1 overwrites eglGetDisplay() from the libGLESv2.so.
+
+In that situation it is inapropriate for libepoxy to select the eglGetDisplay()
+from the libGLESv2.so shared library.
+
+Signed-off-by: Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
+---
+
+Reported upstream as: https://patch-diff.githubusercontent.com/raw/anholt/libepoxy/pull/208.patch
+
+ configure.ac          |  2 ++
+ meson.build           |  4 ++++
+ src/dispatch_common.c | 13 +++++++++++++
+ 3 files changed, 19 insertions(+)
+
+diff --git a/configure.ac b/configure.ac
+index b0bb452..10e9e8e 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -49,6 +49,8 @@ AC_LIBTOOL_WIN32_DLL
+ AC_PROG_LIBTOOL
+ AC_SYS_LARGEFILE
+ 
++AC_GNU_SOURCE
++
+ AC_CHECK_HEADER([KHR/khrplatform.h],
+                 [AC_DEFINE([HAVE_KHRPLATFORM_H], [1],
+                            [Define to 1 if you have <KHR/khrplatform.h> (used for tests)]
+diff --git a/meson.build b/meson.build
+index 91d9792..214c405 100644
+--- a/meson.build
++++ b/meson.build
+@@ -30,6 +30,10 @@ conf.set_quoted('PACKAGE_LOCALEDIR', join_paths(get_option('prefix'), get_option
+ conf.set_quoted('PACKAGE_LIBEXECDIR', join_paths(get_option('prefix'), get_option('libexecdir')))
+ conf.set('HAVE_KHRPLATFORM_H', cc.has_header('KHR/khrplatform.h'))
+ 
++if target_machine.system() == 'linux'
++  conf.set('_GNU_SOURCE', 1)
++endif
++
+ # GLX can be used on different platforms, so we expose a
+ # configure time switch to enable or disable it; in case
+ # the "auto" default value is set, we only enable GLX
+diff --git a/src/dispatch_common.c b/src/dispatch_common.c
+index b3e4f5f..772e59c 100644
+--- a/src/dispatch_common.c
++++ b/src/dispatch_common.c
+@@ -158,6 +158,8 @@
+  *        glXQueryVersion queries."
+  */
+ 
++#include "config.h"
++
+ #include <assert.h>
+ #include <stdlib.h>
+ #ifdef _WIN32
+@@ -334,6 +336,17 @@ do_dlsym(void **handle, const char *name, bool exit_on_fail)
+ #ifdef _WIN32
+     result = GetProcAddress(*handle, name);
+ #else
++
++#ifdef _GNU_SOURCE
++    /*
++     * Check if the symbol is not already defined either by
++     * using aliasing or LD_PRELOAD.
++     */
++    result = dlsym(RTLD_DEFAULT, name);
++    if (result)
++        return result;
++#endif
++
+     result = dlsym(*handle, name);
+     if (!result)
+         error = dlerror();

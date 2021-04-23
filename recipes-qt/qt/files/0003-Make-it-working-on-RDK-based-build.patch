@@ -1,0 +1,28 @@
+From 9258b489e16189b2aa0b98fb44cef02fd75da69c Mon Sep 17 00:00:00 2001
+From: Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
+Date: Thu, 9 Jul 2020 14:01:02 +0200
+Subject: [PATCH] Make it working on RDK based build.
+
+Signed-off-by: Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
+---
+ .../client/wayland-egl/qwaylandeglclientbufferintegration.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/hardwareintegration/client/wayland-egl/qwaylandeglclientbufferintegration.cpp b/src/hardwareintegration/client/wayland-egl/qwaylandeglclientbufferintegration.cpp
+index 3a34d256..312cea3a 100644
+--- a/src/hardwareintegration/client/wayland-egl/qwaylandeglclientbufferintegration.cpp
++++ b/src/hardwareintegration/client/wayland-egl/qwaylandeglclientbufferintegration.cpp
+@@ -87,8 +87,8 @@ void QWaylandEglClientBufferIntegration::initialize(QWaylandDisplay *display)
+ 
+             m_eglDisplay = eglGetPlatformDisplay(EGL_PLATFORM_WAYLAND_KHR, display->wl_display(), nullptr);
+         } else {
+-            qCWarning(lcQpaWayland) << "The EGL implementation does not support the Wayland platform";
+-            return;
++            qCWarning(lcQpaWayland) << "The EGL implementation does not support the Wayland platform. Fallback to use directly eglGetDisplay()";
++            m_eglDisplay = eglGetDisplay((EGLNativeDisplayType) display->wl_display());
+         }
+     } else {
+         QByteArray eglPlatform = qgetenv("EGL_PLATFORM");
+-- 
+2.24.1
+

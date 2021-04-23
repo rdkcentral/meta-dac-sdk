@@ -1,0 +1,45 @@
+From c37fb5dc9cf1df3cb750931431f191344b9135d0 Mon Sep 17 00:00:00 2001
+From: Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
+Date: Thu, 6 Feb 2020 13:31:57 +0100
+Subject: [PATCH] Do not use X11 headers by default.
+
+On embedded platform finding X11 headers is like searching
+a needle in a haystack. So, do not try to include X11 headers
+without passing any extra -DEGL_NO_X11 arguments to the compiler.
+
+Signed-off-by: Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
+---
+ include/EGL/eglplatform.h | 12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
+
+diff --git a/include/EGL/eglplatform.h b/include/EGL/eglplatform.h
+index 5ab49c1..bfc6a29 100644
+--- a/include/EGL/eglplatform.h
++++ b/include/EGL/eglplatform.h
+@@ -116,22 +116,12 @@ typedef intptr_t EGLNativeDisplayType;
+ typedef intptr_t EGLNativePixmapType;
+ typedef intptr_t EGLNativeWindowType;
+ 
+-#elif defined(__unix__) && defined(EGL_NO_X11)
++#elif defined(__unix__)
+ 
+ typedef void             *EGLNativeDisplayType;
+ typedef khronos_uintptr_t EGLNativePixmapType;
+ typedef khronos_uintptr_t EGLNativeWindowType;
+ 
+-#elif defined(__unix__) || defined(USE_X11)
+-
+-/* X11 (tentative)  */
+-#include <X11/Xlib.h>
+-#include <X11/Xutil.h>
+-
+-typedef Display *EGLNativeDisplayType;
+-typedef Pixmap   EGLNativePixmapType;
+-typedef Window   EGLNativeWindowType;
+-
+ #elif defined(__APPLE__)
+ 
+ typedef int   EGLNativeDisplayType;
+-- 
+2.9.5
+
