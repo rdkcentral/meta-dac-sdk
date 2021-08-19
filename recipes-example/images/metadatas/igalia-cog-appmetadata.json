@@ -1,0 +1,17 @@
+{
+    "id": "com.igalia.cog",
+    "type": "application/vnd.rdk-app.dac.native",
+    "version": "2.30.5",
+    "description": "Small launcher for Webkit WPE port",
+    "priority": "optional",
+    "graphics": true,
+    "network": {
+        "type": "open"
+    },
+    "storage": {},
+    "resources": {
+        "ram": "256M"
+    },
+    "features": [],
+    "mounts": []
+}

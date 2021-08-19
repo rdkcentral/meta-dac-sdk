@@ -1,0 +1,16 @@
+Source: EPAM SYSTEMS
+diff --git a/src/i_video.c b/src/i_video.c
+index 1b5fd4cc..bd4cd0af 100644
+--- a/src/i_video.c
++++ b/src/i_video.c
+@@ -1384,6 +1384,10 @@ void I_InitGraphics(void)
+         I_Error("Failed to initialize video: %s", SDL_GetError());
+     }
+ 
++    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
++    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
++    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
++
+     // When in screensaver mode, run full screen and auto detect
+     // screen dimensions (don't change video mode)
+     if (screensaver_mode)
