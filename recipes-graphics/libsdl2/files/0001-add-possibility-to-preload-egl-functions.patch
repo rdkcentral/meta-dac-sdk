@@ -1,0 +1,36 @@
+From 3983ee2e354230e7e908ce22eb3753e1b45126d3 Mon Sep 17 00:00:00 2001
+From: marcin-hajkowski-epam <marcin_hajkowski@epam.com>
+Date: Fri, 30 Apr 2021 15:01:08 +0200
+Subject: [PATCH] add possibility to preload egl functions
+
+---
+ src/video/SDL_egl.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/src/video/SDL_egl.c b/src/video/SDL_egl.c
+index a8a1485..f4c4201 100644
+--- a/src/video/SDL_egl.c
++++ b/src/video/SDL_egl.c
+@@ -19,6 +19,7 @@
+  *  3. This notice may not be removed or altered from any source distribution.
+  */
+ #include "../SDL_internal.h"
++#include <dlfcn.h>
+
+ #if SDL_VIDEO_OPENGL_EGL
+
+@@ -94,7 +95,11 @@
+ _this->egl_data->NAME = (void *)NAME;
+ #else
+ #define LOAD_FUNC(NAME) \
+-_this->egl_data->NAME = SDL_LoadFunction(_this->egl_data->dll_handle, #NAME); \
++_this->egl_data->NAME = SDL_LoadFunction(RTLD_DEFAULT, #NAME); \
++if (!_this->egl_data->NAME) \
++{ \
++    _this->egl_data->NAME = SDL_LoadFunction(_this->egl_data->dll_handle, #NAME); \
++} \
+ if (!_this->egl_data->NAME) \
+ { \
+     return SDL_SetError("Could not retrieve EGL function " #NAME); \
+-- 
+2.25.1
