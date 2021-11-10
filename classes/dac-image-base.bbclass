@@ -4,6 +4,7 @@ IMAGE_FSTYPES = "container oci"
 
 inherit image
 inherit image-oci
+inherit ${@bb.utils.contains("BUNDLE_GENERATE", "1", "dac-bundle", "", d)}
 
 PREFERRED_PROVIDER_virtual/kernel = "linux-dummy"
 
