@@ -1,0 +1,274 @@
+Index: git/src/third_party/starboard/rdk/shared/system.gyp
+===================================================================
+--- git.orig/src/third_party/starboard/rdk/shared/system.gyp
++++ git/src/third_party/starboard/rdk/shared/system.gyp
+@@ -40,13 +40,8 @@
+       'glib-2.0',
+       'gobject-2.0'
+     ],
+-    'wpeframework-packages': [
+-      'WPEFrameworkCore',
+-      'WPEFrameworkDefinitions',
+-      'WPEFrameworkWebSocket',
+-    ],
+-    'has_securityagent%' : '<!(pkg-config securityagent && echo 1 || echo 0)',
+-    'has_cryptography%'  : '<!(pkg-config WPEFrameworkCryptography >/dev/null 2>&1 && echo 1 || echo 0)'
++    'has_securityagent%' : '0',
++    'has_cryptography%'  : '0'
+   },
+   'targets': [
+     {
+@@ -76,23 +71,6 @@
+       },
+     }, # gstreamer
+     {
+-      'target_name': 'wpeframework',
+-      'type': 'none',
+-      'direct_dependent_settings': {
+-        'cflags': [
+-          '<!@(<(pkg-config) --cflags <(wpeframework-packages))',
+-        ],
+-      },
+-      'link_settings': {
+-        'ldflags': [
+-          '<!@(<(pkg-config) --libs-only-L --libs-only-other <(wpeframework-packages))',
+-        ],
+-        'libraries': [
+-          '<!@(<(pkg-config) --libs-only-l <(wpeframework-packages))',
+-        ],
+-      },
+-    }, # wpeframework
+-    {
+       'target_name': 'rfcapi',
+       'type': 'none',
+       'direct_dependent_settings': {
+Index: git/src/third_party/starboard/rdk/shared/sources.gypi
+===================================================================
+--- git.orig/src/third_party/starboard/rdk/shared/sources.gypi
++++ git/src/third_party/starboard/rdk/shared/sources.gypi
+@@ -428,10 +428,6 @@
+         '<(DEPTH)/third_party/libevent/libevent.gyp:libevent',
+         '<(DEPTH)/third_party/starboard/rdk/shared/system.gyp:essos',
+         '<(DEPTH)/third_party/starboard/rdk/shared/system.gyp:gstreamer',
+-        '<(DEPTH)/third_party/starboard/rdk/shared/system.gyp:wpeframework',
+-        '<(DEPTH)/third_party/starboard/rdk/shared/system.gyp:securityagent',
+-        '<(DEPTH)/third_party/starboard/rdk/shared/system.gyp:cryptography',
+-        '<(DEPTH)/third_party/starboard/rdk/shared/system.gyp:rfcapi',
+     ],
+ 
+     'sources': [
+@@ -467,7 +463,10 @@
+         '<(DEPTH)/starboard/shared/stub/cryptography_set_authenticated_data.cc',
+         '<(DEPTH)/starboard/shared/stub/cryptography_set_initialization_vector.cc',
+         '<(DEPTH)/starboard/shared/stub/cryptography_transform.cc',
+-        '<(DEPTH)/starboard/shared/starboard/event_cancel.cc',
++	'<(DEPTH)/starboard/shared/stub/accessibility_get_caption_settings.cc',
++	'<(DEPTH)/starboard/shared/stub/accessibility_get_display_settings.cc',
++	'<(DEPTH)/starboard/shared/stub/accessibility_set_captions_enabled.cc',
++	'<(DEPTH)/starboard/shared/starboard/event_cancel.cc',
+         '<(DEPTH)/starboard/shared/starboard/event_schedule.cc',
+         '<(DEPTH)/starboard/shared/starboard/file_mode_string_to_flags.cc',
+         '<(DEPTH)/starboard/shared/starboard/log_message.cc',
+@@ -483,15 +482,11 @@
+         '<(DEPTH)/starboard/shared/stub/speech_recognizer_is_supported.cc',
+         '<(DEPTH)/starboard/shared/stub/speech_recognizer_start.cc',
+         '<(DEPTH)/starboard/shared/stub/speech_recognizer_stop.cc',
+-        '<(DEPTH)/third_party/starboard/rdk/shared/accessibility_data.cc',
+-        '<(DEPTH)/third_party/starboard/rdk/shared/accessibility_set_captions_enabled.cc',
+-        '<(DEPTH)/third_party/starboard/rdk/shared/accessibility_get_caption_settings.cc',
+-        '<(DEPTH)/third_party/starboard/rdk/shared/accessibility_get_display_settings.cc',
+         '<(DEPTH)/third_party/starboard/rdk/shared/speech/speech_synthesis_cancel.cc',
+         '<(DEPTH)/third_party/starboard/rdk/shared/speech/speech_synthesis_is_supported.cc',
+         '<(DEPTH)/third_party/starboard/rdk/shared/speech/speech_synthesis_speak.cc',
+         '<(DEPTH)/third_party/starboard/rdk/shared/speech/accessibility_get_text_to_speech_settings.cc',
+-        '<(DEPTH)/third_party/starboard/rdk/shared/rdkservices.cc',
++#        '<(DEPTH)/third_party/starboard/rdk/shared/rdkservices.cc',
+         '<(DEPTH)/third_party/starboard/rdk/shared/ess_input.cc',
+         '<(DEPTH)/third_party/starboard/rdk/shared/application_rdk.cc',
+         '<(DEPTH)/third_party/starboard/rdk/shared/get_home_directory.cc',
+@@ -503,7 +498,7 @@
+         '<(DEPTH)/third_party/starboard/rdk/shared/hang_detector.h',
+         '<(DEPTH)/third_party/starboard/rdk/shared/hang_detector.cc',
+         '<(DEPTH)/third_party/starboard/rdk/shared/linux_key_mapping.h',
+-        '<(DEPTH)/third_party/starboard/rdk/shared/linux_key_mapping.cc',
++#        '<(DEPTH)/third_party/starboard/rdk/shared/linux_key_mapping.cc',
+     ],
+     'conditions': [
+       ['<(has_ocdm)==1', {
+Index: git/src/third_party/starboard/rdk/shared/rdkservices.h
+===================================================================
+--- git.orig/src/third_party/starboard/rdk/shared/rdkservices.h
++++ git/src/third_party/starboard/rdk/shared/rdkservices.h
+@@ -32,9 +32,9 @@ namespace rdk {
+ namespace shared {
+ 
+ struct ResolutionInfo {
+-  ResolutionInfo() {}
++  ResolutionInfo() {};
+   ResolutionInfo(uint32_t w, uint32_t h)
+-    : Width(w), Height(h) {}
++    : Width(w), Height(h) {};
+   uint32_t Width { 1920 };
+   uint32_t Height { 1080 };
+ };
+@@ -50,60 +50,57 @@ public:
+     kHdrTechnicolor = (1u << 4),
+   };
+ 
+-  DisplayInfo();
+-  ~DisplayInfo();
+-  ResolutionInfo GetResolution() const;
+-  float GetDiagonalSizeInInches() const;
+-  uint32_t GetHDRCaps() const;
+-private:
+-  struct Impl;
+-  mutable ::starboard::scoped_ptr<Impl> impl_;
++  DisplayInfo(){};
++  ~DisplayInfo(){};
++  ResolutionInfo GetResolution() {return ResolutionInfo();};
++  float GetDiagonalSizeInInches() {return 42;};
++  uint32_t GetHDRCaps() {return 0u;};
+ };
+ 
+ class DeviceIdentification {
+ public:
+-  static std::string GetChipset();
+-  static std::string GetFirmwareVersion();
++  static std::string GetChipset() {return "";};
++  static std::string GetFirmwareVersion() {return "";};
+ };
+ 
+ class NetworkInfo {
+ public:
+-  static bool IsConnectionTypeWireless();
++  static bool IsConnectionTypeWireless() {return false;};
+ };
+ 
+ class TextToSpeech {
+ public:
+-  static bool IsEnabled();
+-  static void Speak(const std::string& text);
+-  static void Cancel();
++  static bool IsEnabled() {return false;};
++  static void Speak(const std::string& text) {};
++  static void Cancel() {};
+ };
+ 
+ class Accessibility {
+ public:
+-  static void SetSettings(const std::string& json);
+-  static bool GetSettings(std::string& out_json);
+-  static bool GetCaptionSettings(SbAccessibilityCaptionSettings* out);
+-  static bool GetDisplaySettings(SbAccessibilityDisplaySettings* out);
++  static void SetSettings(const std::string& json) {};
++  static bool GetSettings(std::string& out_json) {return false;};
++  static bool GetCaptionSettings(SbAccessibilityCaptionSettings* out) {return false;};
++  static bool GetDisplaySettings(SbAccessibilityDisplaySettings* out) {return false;};
+ };
+ 
+ class SystemProperties {
+ public:
+-  static void SetSettings(const std::string& json);
+-  static bool GetSettings(std::string& out_json);
+-  static bool GetChipset(std::string &out);
+-  static bool GetFirmwareVersion(std::string &out);
+-  static bool GetIntegratorName(std::string &out);
+-  static bool GetBrandName(std::string &out);
+-  static bool GetModelName(std::string &out);
+-  static bool GetModelYear(std::string &out);
+-  static bool GetFriendlyName(std::string &out);
+-  static bool GetDeviceType(std::string &out);
++  static void SetSettings(const std::string& json) {};
++  static bool GetSettings(std::string& out_json) {return false;};
++  static bool GetChipset(std::string &out) {return false;};
++  static bool GetFirmwareVersion(std::string &out) {return false;};
++  static bool GetIntegratorName(std::string &out) {return false;};
++  static bool GetBrandName(std::string &out) {return false;};
++  static bool GetModelName(std::string &out) {return false;};
++  static bool GetModelYear(std::string &out) {return false;};
++  static bool GetFriendlyName(std::string &out) {return false;};
++  static bool GetDeviceType(std::string &out) {return false;};
+ };
+ 
+ class AuthService {
+ public:
+-  static bool IsAvailable();
+-  static bool GetExperience(std::string &out);
++  static bool IsAvailable() {return false;};
++  static bool GetExperience(std::string &out) {return false;};
+ };
+ 
+ }  // namespace shared
+Index: git/src/third_party/starboard/rdk/shared/system/system_get_device_type.cc
+===================================================================
+--- git.orig/src/third_party/starboard/rdk/shared/system/system_get_device_type.cc
++++ git/src/third_party/starboard/rdk/shared/system/system_get_device_type.cc
+@@ -14,13 +14,13 @@
+ #include "starboard/system.h"
+ #include "starboard/string.h"
+ 
+-#include <core/Enumerate.h>
++// #include <core/Enumerate.h>
+ 
+ #include "third_party/starboard/rdk/shared/rdkservices.h"
+ #include "third_party/starboard/rdk/shared/log_override.h"
+ 
+ using namespace third_party::starboard::rdk::shared;
+-
++/*
+ namespace WPEFramework {
+ 
+ ENUM_CONVERSION_HANDLER(SbSystemDeviceType);
+@@ -37,8 +37,9 @@ ENUM_CONVERSION_BEGIN(SbSystemDeviceType
+ ENUM_CONVERSION_END(SbSystemDeviceType);
+ 
+ }
+-
++*/
+ SbSystemDeviceType SbSystemGetDeviceType() {
++/*
+   std::string prop;
+   if (SystemProperties::GetDeviceType(prop)) {
+     WPEFramework::Core::EnumerateType<SbSystemDeviceType> converted(prop.c_str(), false);
+@@ -57,5 +58,6 @@ SbSystemDeviceType SbSystemGetDeviceType
+     }
+   }
+   SB_LOG(INFO) << "DeviceType: 'SetTopBox'";
++*/
+   return kSbSystemDeviceTypeSetTopBox;
+ }
+Index: git/src/third_party/starboard/rdk/shared/linux_key_mapping.h
+===================================================================
+--- git.orig/src/third_party/starboard/rdk/shared/linux_key_mapping.h
++++ git/src/third_party/starboard/rdk/shared/linux_key_mapping.h
+@@ -30,7 +30,7 @@ namespace shared {
+ 
+ class LinuxKeyMapping {
+ public:
+-  static void MapKeyCodeAndModifiers(uint32_t& key_code, uint32_t& modifiers);
++  static void MapKeyCodeAndModifiers(uint32_t& key_code, uint32_t& modifiers) {};
+ };
+ 
+ }  // namespace shared
+Index: git/src/third_party/starboard/rdk/shared/player/Rialto/ClientBackend.h
+===================================================================
+--- git.orig/src/third_party/starboard/rdk/shared/player/Rialto/ClientBackend.h
++++ git/src/third_party/starboard/rdk/shared/player/Rialto/ClientBackend.h
+@@ -1,6 +1,7 @@
+ #pragma once
+ 
+-#include "wtf/Assertions.h"
++//#include "wtf/Assertions.h"
++#include <cassert>
+ #include "ClientBackendInterface.h"
+ #include "SharedLibrary.h"
+ #include "SharedLibraryManager.h"
+@@ -32,7 +33,7 @@ public:
+         MediaPlayerBackend* mediaPlayerBackend = mSharedLibrary->createMediaPlayerBackend(client, contentDecryptionBackend, windowManager);
+         if(!mediaPlayerBackend)
+         {
+-            LOG_ERROR("Could not create media player backend");
++            printf("Could not create media player backend");
+             return;
+         }
+         mMediaPlayerBackend = std::unique_ptr<MediaPlayerBackend>(mediaPlayerBackend);

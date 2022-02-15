@@ -9,6 +9,11 @@
 		# Install 'repo' tool from: https://android.googlesource.com/tools/repo
 		repo init -u https://github.com/stagingrdkm/lgpub/ -m manifests/dac-dunfell-3.1.6-manifest.xml
 		repo sync -v
+
+		# OPTIONAL: for building the cobalt (rialto) DAC image
+		#git clone --branch master "https://code.rdkcentral.com/r/components/generic/avbus-poc"
+		#cp avbus-poc/cobalt/libcobalt-21.lts.stable-6.patch meta-dac-sdk/recipes-example/cobalt/files/
+
 		. ./oe-init-build-env
 		cp ../.repo/manifests/manifests/bblayers.conf conf/
 
@@ -27,7 +32,10 @@
 		bitbake dac-image-essos-egl
 		bitbake dac-image-qt-test
 		bitbake dac-image-shell
-		
+
+		# if avbus-poc is available
+		bitbake dac-image-cobalt
+
 		# Or build them all at once
 		bitbake dac-image-wayland-egl-test dac-image-wayland-egl-test-input dac-image-essos-sample dac-image-essos-egl dac-image-qt-test dac-image-shell
 

@@ -1,0 +1,21 @@
+Index: rialtoClient/source/ContentDecryptionClearKeyDelegate.cpp
+===================================================================
+--- rialtoClient.orig/source/ContentDecryptionClearKeyDelegate.cpp
++++ rialtoClient/source/ContentDecryptionClearKeyDelegate.cpp
+@@ -25,6 +25,7 @@
+ 
+ #include <openssl/aes.h>
+ #include <openssl/evp.h>
++#include <openssl/modes.h>
+ 
+ #include <jsoncpp/json.h>
+ #include <stdlib.h>
+@@ -1176,7 +1177,7 @@ ContentDecryptionClearKeyDelegate::decry
+     unsigned int num = 0;
+ 
+     memcpy(initVecBuf, &initVector[0], initVector.size());
+-    AES_ctr128_encrypt(&encData[0], decDataBuf, encData.size(), &aesKey, initVecBuf, countBuf, &num);
++    CRYPTO_ctr128_encrypt(&encData[0], decDataBuf, encData.size(), &aesKey, initVecBuf, countBuf, &num, (block128_f)AES_encrypt);
+ 
+     decData = std::vector<uint8_t>(decDataBuf, decDataBuf + encData.size());
+     return ContentDecryptionBackend::DECRYPT_STATUS_OK;
