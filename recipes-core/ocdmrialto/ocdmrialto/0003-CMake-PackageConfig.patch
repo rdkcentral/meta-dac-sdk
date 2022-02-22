@@ -10,13 +10,7 @@ Index: ocdmRialto/CMakeLists.txt
  
  set(CMAKE_CXX_STANDARD 14)
  enable_language(CXX)
-@@ -24,19 +25,26 @@ set(LIB_OCDM_RIALTO_SOURCES
-         source/OpenCDMSession.cpp)
- 
- set(LIB_OCDM_RIALTO_PUBLIC_HEADERS
-+        include/opencdm/open_cdm.h
-+        include/opencdm/open_cdm_adapter.h
-         )
+@@ -28,15 +29,18 @@ set(LIB_OCDM_RIALTO_PUBLIC_HEADERS
  
  add_library(ocdmRialto SHARED ${LIB_OCDM_RIALTO_SOURCES} )
  
@@ -37,8 +31,7 @@ Index: ocdmRialto/CMakeLists.txt
 -        TARGETS ocdmRialto
 -        DESCRIPTION "OCDM library using Rialto")
 -
-+install(FILES ${LIB_OCDM_RIALTO_PUBLIC_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/opencdm)
- 
+-
 +install(FILES "${CMAKE_CURRENT_BINARY_DIR}/pkg-config/ocdmRialto.pc"
 +       DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 Index: ocdmRialto/pkg-config/ocdmRialto.pc.in
