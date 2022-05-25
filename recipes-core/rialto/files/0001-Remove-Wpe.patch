@@ -1,0 +1,100 @@
+Index: git/ocdmRialto/CMakeLists.txt
+===================================================================
+--- git.orig/ocdmRialto/CMakeLists.txt
++++ git/ocdmRialto/CMakeLists.txt
+@@ -5,7 +5,6 @@ set( CMAKE_CXX_STANDARD_REQUIRED ON )
+ include( CheckCXXCompilerFlag )
+ 
+ find_package( ocdm REQUIRED )
+-find_package( WPEFramework REQUIRED )
+ find_package( PkgConfig REQUIRED )
+ pkg_check_modules( GStreamerApp REQUIRED IMPORTED_TARGET gstreamer-app-1.0 )
+ 
+Index: git/ocdmRialto/source/OpenCDMSession.cpp
+===================================================================
+--- git.orig/ocdmRialto/source/OpenCDMSession.cpp
++++ git/ocdmRialto/source/OpenCDMSession.cpp
+@@ -1,6 +1,8 @@
+ #include <OpenCDMSession.h>
+ #include <Utils.h>
+-#include <WPEFramework/core/Trace.h>
++//#include <WPEFramework/core/Trace.h>
++#define TRACE_L1 printf
++#define TRACE_L2 printf
+ #include <gst/base/base.h>
+ #include <gst/gst.h>
+ #include <gst/gstprotection.h>
+Index: git/ocdmRialto/source/open_cdm.cpp
+===================================================================
+--- git.orig/ocdmRialto/source/open_cdm.cpp
++++ git/ocdmRialto/source/open_cdm.cpp
+@@ -1,9 +1,12 @@
++#include <cassert>
+ #include <opencdm/open_cdm.h>
+ 
+ #include <OpenCDMSession.h>
+ #include <OpenCDMSystem.h>
+ #include <Utils.h>
+-#include <WPEFramework/core/Trace.h>
++//#include <WPEFramework/core/Trace.h>
++#define TRACE_L1 printf
++#define TRACE_L2 printf
+ 
+ OpenCDMSystem *opencdm_create_system(const char keySystem[])
+ {
+Index: git/ocdmRialto/source/open_cdm_adapter.cpp
+===================================================================
+--- git.orig/ocdmRialto/source/open_cdm_adapter.cpp
++++ git/ocdmRialto/source/open_cdm_adapter.cpp
+@@ -1,13 +1,15 @@
+ #include <OpenCDMSession.h>
+-#include <WPEFramework/core/Trace.h>
++//#include <WPEFramework/core/Trace.h>
++#define TRACE_L1 printf
++#define TRACE_L2 printf
+ #include <opencdm/open_cdm_adapter.h>
+ 
+ struct _GstCaps;
+ typedef struct _GstCaps GstCaps;
+ 
+-OpenCDMError opencdm_gstreamer_session_decrypt_ex(struct OpenCDMSession *session, GstBuffer *buffer,
+-                                                  GstBuffer *subSample, const uint32_t subSampleCount, GstBuffer *IV,
+-                                                  GstBuffer *keyID, uint32_t initWithLast15, GstCaps *caps)
++OpenCDMError opencdm_gstreamer_session_decrypt(struct OpenCDMSession *session, GstBuffer *buffer, GstBuffer *subSample,
++                                               const uint32_t subSampleCount, GstBuffer *IV, GstBuffer *keyID,
++                                               uint32_t initWithLast15)
+ {
+     // Decrypting is done on Rialto server side after pulling GstBuffers from Rialto sinks
+     // To decrypt data, RialtoServer needs to have GstProtectionMeta, but buffers from Netflix don't contain it
+@@ -20,16 +22,3 @@ OpenCDMError opencdm_gstreamer_session_d
+     session->addProtectionMeta(buffer, subSample, subSampleCount, IV, initWithLast15);
+     return ERROR_NONE;
+ }
+-
+-OpenCDMError opencdm_gstreamer_session_decrypt(struct OpenCDMSession *session, GstBuffer *buffer, GstBuffer *subSample,
+-                                               const uint32_t subSampleCount, GstBuffer *IV, GstBuffer *keyID,
+-                                               uint32_t initWithLast15)
+-{
+-    return opencdm_gstreamer_session_decrypt_ex(session, buffer, subSample, subSampleCount, IV, keyID, initWithLast15,
+-                                                nullptr);
+-}
+-
+-OpenCDMError opencdm_gstreamer_transform_caps(GstCaps **caps)
+-{
+-    return ERROR_NONE;
+-}
+Index: git/ocdmRialto/source/open_cdm_ext.cpp
+===================================================================
+--- git.orig/ocdmRialto/source/open_cdm_ext.cpp
++++ git/ocdmRialto/source/open_cdm_ext.cpp
+@@ -1,7 +1,9 @@
+ #include <OpenCDMSession.h>
+ #include <OpenCDMSystem.h>
+ #include <Utils.h>
+-#include <WPEFramework/core/Trace.h>
++//#include <WPEFramework/core/Trace.h>
++#define TRACE_L1 printf
++#define TRACE_L2 printf
+ #include <opencdm/open_cdm_ext.h>
+ 
+ OpenCDMError opencdm_system_ext_get_ldl_session_limit(struct OpenCDMSystem *system, uint32_t *ldlLimit)

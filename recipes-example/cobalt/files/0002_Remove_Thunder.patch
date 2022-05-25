@@ -46,7 +46,7 @@ Index: git/src/third_party/starboard/rdk/shared/sources.gypi
 ===================================================================
 --- git.orig/src/third_party/starboard/rdk/shared/sources.gypi
 +++ git/src/third_party/starboard/rdk/shared/sources.gypi
-@@ -428,10 +428,6 @@
+@@ -418,10 +418,6 @@
          '<(DEPTH)/third_party/libevent/libevent.gyp:libevent',
          '<(DEPTH)/third_party/starboard/rdk/shared/system.gyp:essos',
          '<(DEPTH)/third_party/starboard/rdk/shared/system.gyp:gstreamer',
@@ -57,7 +57,7 @@ Index: git/src/third_party/starboard/rdk/shared/sources.gypi
      ],
  
      'sources': [
-@@ -467,7 +463,10 @@
+@@ -457,7 +453,10 @@
          '<(DEPTH)/starboard/shared/stub/cryptography_set_authenticated_data.cc',
          '<(DEPTH)/starboard/shared/stub/cryptography_set_initialization_vector.cc',
          '<(DEPTH)/starboard/shared/stub/cryptography_transform.cc',
@@ -69,7 +69,7 @@ Index: git/src/third_party/starboard/rdk/shared/sources.gypi
          '<(DEPTH)/starboard/shared/starboard/event_schedule.cc',
          '<(DEPTH)/starboard/shared/starboard/file_mode_string_to_flags.cc',
          '<(DEPTH)/starboard/shared/starboard/log_message.cc',
-@@ -483,15 +482,11 @@
+@@ -473,15 +472,11 @@
          '<(DEPTH)/starboard/shared/stub/speech_recognizer_is_supported.cc',
          '<(DEPTH)/starboard/shared/stub/speech_recognizer_start.cc',
          '<(DEPTH)/starboard/shared/stub/speech_recognizer_stop.cc',
@@ -86,7 +86,7 @@ Index: git/src/third_party/starboard/rdk/shared/sources.gypi
          '<(DEPTH)/third_party/starboard/rdk/shared/ess_input.cc',
          '<(DEPTH)/third_party/starboard/rdk/shared/application_rdk.cc',
          '<(DEPTH)/third_party/starboard/rdk/shared/get_home_directory.cc',
-@@ -503,7 +498,7 @@
+@@ -493,7 +488,7 @@
          '<(DEPTH)/third_party/starboard/rdk/shared/hang_detector.h',
          '<(DEPTH)/third_party/starboard/rdk/shared/hang_detector.cc',
          '<(DEPTH)/third_party/starboard/rdk/shared/linux_key_mapping.h',
@@ -250,25 +250,3 @@ Index: git/src/third_party/starboard/rdk/shared/linux_key_mapping.h
  };
  
  }  // namespace shared
-Index: git/src/third_party/starboard/rdk/shared/player/Rialto/ClientBackend.h
-===================================================================
---- git.orig/src/third_party/starboard/rdk/shared/player/Rialto/ClientBackend.h
-+++ git/src/third_party/starboard/rdk/shared/player/Rialto/ClientBackend.h
-@@ -1,6 +1,7 @@
- #pragma once
- 
--#include "wtf/Assertions.h"
-+//#include "wtf/Assertions.h"
-+#include <cassert>
- #include "ClientBackendInterface.h"
- #include "SharedLibrary.h"
- #include "SharedLibraryManager.h"
-@@ -32,7 +33,7 @@ public:
-         MediaPlayerBackend* mediaPlayerBackend = mSharedLibrary->createMediaPlayerBackend(client, contentDecryptionBackend, windowManager);
-         if(!mediaPlayerBackend)
-         {
--            LOG_ERROR("Could not create media player backend");
-+            printf("Could not create media player backend");
-             return;
-         }
-         mMediaPlayerBackend = std::unique_ptr<MediaPlayerBackend>(mediaPlayerBackend);

@@ -1,14 +1,14 @@
-Index: rialtoClient/source/ContentDecryptionClearKeyDelegate.cpp
+Index: git/rialtoClient/source/ContentDecryptionClearKeyDelegate.cpp
 ===================================================================
---- rialtoClient.orig/source/ContentDecryptionClearKeyDelegate.cpp
-+++ rialtoClient/source/ContentDecryptionClearKeyDelegate.cpp
+--- git.orig/rialtoClient/source/ContentDecryptionClearKeyDelegate.cpp
++++ git/rialtoClient/source/ContentDecryptionClearKeyDelegate.cpp
 @@ -25,6 +25,7 @@
  
  #include <openssl/aes.h>
  #include <openssl/evp.h>
 +#include <openssl/modes.h>
  
- #include <jsoncpp/json.h>
+ #include <json/json.h>
  #include <stdlib.h>
 @@ -1176,7 +1177,7 @@ ContentDecryptionClearKeyDelegate::decry
      unsigned int num = 0;
