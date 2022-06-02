@@ -22,6 +22,6 @@ SRC_URI += "file://0008-fix-gst-plugin-name.patch"
 SRC_URI += "file://0002_CMakeList_versioning.patch"
 SRC_URI += "file://0001-Remove-Wpe.patch"
 
-SRCREV = "30031e61a4ee97ebf247c3381bd3e5715ebdfccb"
+SRCREV = "67efbd7bf0299364b81671f5721dc73d6bb02bea"
 SRC_URI += "file://0002-fix-crash2.patch"
 SRC_URI += "file://0003-CMake-PackageConfig2.patch"

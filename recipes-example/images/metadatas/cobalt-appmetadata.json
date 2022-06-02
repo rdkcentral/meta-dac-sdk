@@ -8,7 +8,14 @@
     "network": {
         "type": "open"
     },
-    "storage": {},
+    "storage": {
+        "persistent": [
+            {
+                "size": "10M",
+                "path": "/home/root"
+            }
+        ]
+    },
     "resources": {
         "ram": "128M"
     },
