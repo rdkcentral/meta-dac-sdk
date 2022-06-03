@@ -2,7 +2,7 @@ Index: git/ocdmRialto/CMakeLists.txt
 ===================================================================
 --- git.orig/ocdmRialto/CMakeLists.txt
 +++ git/ocdmRialto/CMakeLists.txt
-@@ -5,7 +5,6 @@ set( CMAKE_CXX_STANDARD_REQUIRED ON )
+@@ -7,7 +7,6 @@ set( CMAKE_CXX_STANDARD_REQUIRED ON )
  include( CheckCXXCompilerFlag )
  
  find_package( ocdm REQUIRED )
@@ -46,7 +46,7 @@ Index: git/ocdmRialto/source/open_cdm_adapter.cpp
 ===================================================================
 --- git.orig/ocdmRialto/source/open_cdm_adapter.cpp
 +++ git/ocdmRialto/source/open_cdm_adapter.cpp
-@@ -1,13 +1,15 @@
+@@ -1,5 +1,7 @@
  #include <OpenCDMSession.h>
 -#include <WPEFramework/core/Trace.h>
 +//#include <WPEFramework/core/Trace.h>
@@ -55,34 +55,6 @@ Index: git/ocdmRialto/source/open_cdm_adapter.cpp
  #include <opencdm/open_cdm_adapter.h>
  
  struct _GstCaps;
- typedef struct _GstCaps GstCaps;
- 
--OpenCDMError opencdm_gstreamer_session_decrypt_ex(struct OpenCDMSession *session, GstBuffer *buffer,
--                                                  GstBuffer *subSample, const uint32_t subSampleCount, GstBuffer *IV,
--                                                  GstBuffer *keyID, uint32_t initWithLast15, GstCaps *caps)
-+OpenCDMError opencdm_gstreamer_session_decrypt(struct OpenCDMSession *session, GstBuffer *buffer, GstBuffer *subSample,
-+                                               const uint32_t subSampleCount, GstBuffer *IV, GstBuffer *keyID,
-+                                               uint32_t initWithLast15)
- {
-     // Decrypting is done on Rialto server side after pulling GstBuffers from Rialto sinks
-     // To decrypt data, RialtoServer needs to have GstProtectionMeta, but buffers from Netflix don't contain it
-@@ -20,16 +22,3 @@ OpenCDMError opencdm_gstreamer_session_d
-     session->addProtectionMeta(buffer, subSample, subSampleCount, IV, initWithLast15);
-     return ERROR_NONE;
- }
--
--OpenCDMError opencdm_gstreamer_session_decrypt(struct OpenCDMSession *session, GstBuffer *buffer, GstBuffer *subSample,
--                                               const uint32_t subSampleCount, GstBuffer *IV, GstBuffer *keyID,
--                                               uint32_t initWithLast15)
--{
--    return opencdm_gstreamer_session_decrypt_ex(session, buffer, subSample, subSampleCount, IV, keyID, initWithLast15,
--                                                nullptr);
--}
--
--OpenCDMError opencdm_gstreamer_transform_caps(GstCaps **caps)
--{
--    return ERROR_NONE;
--}
 Index: git/ocdmRialto/source/open_cdm_ext.cpp
 ===================================================================
 --- git.orig/ocdmRialto/source/open_cdm_ext.cpp

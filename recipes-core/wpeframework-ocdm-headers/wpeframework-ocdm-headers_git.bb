@@ -9,6 +9,9 @@ SRCREV = "f69e573984e9f46300eef90dafe81663beb6b8f6"
 
 S = "${WORKDIR}/git"
 
+FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+SRC_URI += "file://0001-add-decrypt-ex.patch"
+
 do_compile[noexec] = "1"
 
 do_install() {

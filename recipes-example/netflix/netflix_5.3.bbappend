@@ -12,7 +12,6 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 SRC_URI += "file://0004-set-noverify.patch"
 SRC_URI += "file://0010-stat-reserved-s32-build-fix.patch"
-SRC_URI += "file://0005-missing-gstcaps.patch;patchdir=${WORKDIR}/git"
 SRC_URI += "file://0011-add-rialto.patch;patchdir=${WORKDIR}/git"
 SRC_URI += "file://0013-add-playready.patch;patchdir=${WORKDIR}/git"
 SRC_URI += "file://0020-remove-rdk-parts.patch;patchdir=${WORKDIR}/git"
