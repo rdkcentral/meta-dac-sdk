@@ -1,0 +1,12 @@
+Index: netflix/src/base/DataBuffer.h
+===================================================================
+--- netflix.orig/src/base/DataBuffer.h
++++ netflix/src/base/DataBuffer.h
+@@ -10,6 +10,7 @@
+ #include <fcntl.h>
+ #include <unistd.h>
+ #include <sys/mman.h>
++#undef __reserved
+ #include <sys/stat.h>
+ #include <sys/types.h>
+ 

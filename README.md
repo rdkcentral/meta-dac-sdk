@@ -10,10 +10,6 @@
 	repo init -u https://github.com/stagingrdkm/lgpub/ -m manifests/dac-dunfell-3.1.6-manifest.xml
 	repo sync -v
 
-	# OPTIONAL: for building the cobalt (rialto) DAC image
-	#git clone --branch master "https://code.rdkcentral.com/r/components/generic/avbus-poc"
-	#cp avbus-poc/cobalt/libcobalt-21.lts.stable-6.patch meta-dac-sdk/recipes-example/cobalt/files/
-
 	. ./oe-init-build-env
 	cp ../.repo/manifests/manifests/bblayers.conf conf/
 
@@ -36,11 +32,42 @@
 	bitbake dac-image-qt-test
 	bitbake dac-image-shell
 
-	# if avbus-poc is available
-	bitbake dac-image-cobalt
-
 	# Or build them all at once
 	bitbake dac-image-wayland-egl-test dac-image-wayland-egl-test-input dac-image-essos-sample dac-image-essos-egl dac-image-qt-test dac-image-shell
+
+# Building Cobalt DAC app
+
+Cobalt DAC app needs rialto. This requires access to the avbus-poc repo. Extra setup steps:
+>
+	git clone --branch master "https://code.rdkcentral.com/r/components/generic/avbus-poc"
+	cp avbus-poc/cobalt/libcobalt-21.lts.stable-6.patch meta-dac-sdk/recipes-example/cobalt/files/
+
+Build:
+>
+	bitbake dac-image-cobalt
+
+# Building Netflix DAC app
+
+Netflix DAC app needs several things in order to build:
+* rialto, this requires access to the avbus-poc repo
+* netflix source tarball
+* meta-rdk-netflix repo
+* playready headers (0013-add-playready.patch is missing from meta-dac-sdk on purpose)
+
+The actually run the netflix DAC app, it also requires a correct netflix vault file on the host under /opt/netflix-binfile.bin.
+
+Extra setup steps:
+>
+	git clone "https://code.rdkcentral.com/r/apps/netflix/rdk-oe/meta-rdk-netflix"
+	mkdir -p build/downloads
+	cp ~/from_somewhere/nrd-5.3.1-27d5e9003f.tar.gz build/downloads/nrd-5.3.1-27d5e9003f.tar.gz
+	touch build/downloads/nrd-5.3.1-27d5e9003f.tar.gz.done
+	cp ~/from_somewhere/0013-add-playready.patch meta-dac-sdk/recipes-example/netflix/files/
+	echo 'BBLAYERS += " ${TOPDIR}/../meta-rdk-netflix"' >> build/conf/bblayers.conf
+
+Build:
+>
+	bitbake dac-image-netflix
 
 # Generating DAC bundles
 

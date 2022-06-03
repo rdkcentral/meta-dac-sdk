@@ -1,0 +1,52 @@
+Index: git/partner/dpi/gstreamer/PlaybackGroupNative.cpp
+===================================================================
+--- git.orig/partner/dpi/gstreamer/PlaybackGroupNative.cpp
++++ git/partner/dpi/gstreamer/PlaybackGroupNative.cpp
+@@ -34,7 +34,7 @@ extern void ApplicationManagerContentSto
+ #if defined(GST_GL)
+ #include "VideoSinkGStreamer.h"
+ #endif
+-#define VIDEO_SINK_NAME "westerossink"
++#define VIDEO_SINK_NAME "rialtovideoappsink"
+ #define VIDEO_DECODER_NAME "westerossink"
+ #define TOO_FAR_AHEAD_THRESHOLD_SECONDS 20
+ #define UHD_WITDH   3840
+@@ -304,7 +304,7 @@ PlaybackGroupNative::PlaybackGroupNative
+     Log::info(TRACE_MEDIACONTROL, "Enabling audio downmixing to stereo");
+     g_object_set(mGstPipeline, "audio-filter", capsfilter, NULL);
+   }
+-  mVideoSink = createWesterosSink();
++  mVideoSink = NULL; //createWesterosSink();
+ #if defined(GST_GL)
+   mVideoSinkGst.reset(new VideoSinkGStreamer());
+   g_object_set(mGstPipeline, "video-sink", mVideoSinkGst->createVideoSink(), NULL);
+Index: git/partner/dpi/gstreamer/ocdm/CMakeLists.txt
+===================================================================
+--- git.orig/partner/dpi/gstreamer/ocdm/CMakeLists.txt
++++ git/partner/dpi/gstreamer/ocdm/CMakeLists.txt
+@@ -88,10 +88,11 @@ endif ()
+ if (DPI_REFERENCE_DRM_OCDM)
+     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${HAVE_DPI_DIRECTORY}/ocdm)
+     add_library(drmocdm ${LIBRARY_TYPE} ${PLAYREADY_SOURCES})
+-    target_link_libraries(drmocdm ocdm gstreamer-1.0 glib-2.0 gobject-2.0 gstaudio-1.0 gstapp-1.0 gstvideo-1.0 gstbase-1.0 WPEFrameworkProtocols WPEFrameworkDefinitions WPEFrameworkCore WPEFrameworkTracing )
++    target_link_libraries(drmocdm ocdmRialto gstreamer-1.0 glib-2.0 gobject-2.0 gstaudio-1.0 gstapp-1.0 gstvideo-1.0 gstbase-1.0 WPEFrameworkProtocols WPEFrameworkDefinitions WPEFrameworkCore WPEFrameworkTracing )
+     target_include_directories(drmocdm PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+     target_compile_options(drmocdm PRIVATE -fvisibility=hidden)
+     set_target_properties(drmocdm PROPERTIES OUTPUT_NAME "drmsystem")
++    target_compile_options(drmocdm PRIVATE -DBUILD_TYPE=\"Release\" -DPLAYREADY -DCOMCAST_BUILD=1 -DCOMCAST_BUILD_OPL=1 -DCOMCAST_ENABLE_RDKDS=1 -DDRM_BUILD_PROFILE=900 -DDRM_COMPILE_FOR_NORMAL_WORLD=0 -DDRM_COMPILE_FOR_SECURE_WORLD=1 -DDRM_SUPPORT_3RDPARTY_REVOCATION=0 -DDRM_SUPPORT_ASSEMBLY=0 -DDRM_SUPPORT_DATASTORE_PREALLOC=1 -DDRM_SUPPORT_ECCPROFILING=0 -DDRM_SUPPORT_FILE_LOCKING=1 -DDRM_SUPPORT_FORCE_ALIGN=1 -DDRM_SUPPORT_INLINEDWORDCPY=0 -DDRM_SUPPORT_MULTI_THREADING=0 -DDRM_SUPPORT_NATIVE_64BIT_TYPES=1 -DDRM_SUPPORT_PRECOMPUTE_GTABLE=1 -DDRM_SUPPORT_PROFILING=0 -DDRM_SUPPORT_SECUREOEMHAL=0 -DDRM_SUPPORT_SECUREOEMHAL_PLAY_ONLY=0 -DDRM_SUPPORT_TEE=3 -DDRM_SUPPORT_TOOLS_NET_IO=0 -DDRM_SUPPORT_TRACING=1 -DOEM_TEE_VERSION_BUILD=0 -DOEM_TEE_VERSION_MAJOR=0 -DOEM_TEE_VERSION_MINOR=1 -DOEM_TEE_VERSION_RELEASE=0  -DTARGET_SUPPORTS_UNALIGNED_DWORD_POINTERS=1 -DUSE_CIPHER_CACHING=1 -DUSE_HDCP_2X_SUPPORT=1 -DUSE_OPENSSL_ECC_VERIFY=1 -DUSE_PR3FEATURES_CHECK=1 -DUSE_SVP=1 -DUSE_TK_PRELOAD -DUSE_TYPEJ_KEYS=1)
+ 
+     set_target_properties(drmocdm PROPERTIES ADDITIONAL_CLEAN_FILES ${HAVE_DPI_DIRECTORY}/ocdm)
+ 
+Index: git/partner/dpi/gstreamer/playready/CMakeLists.txt
+===================================================================
+--- git.orig/partner/dpi/gstreamer/playready/CMakeLists.txt
++++ git/partner/dpi/gstreamer/playready/CMakeLists.txt
+@@ -135,7 +135,7 @@ endif ()
+ if (DPI_REFERENCE_DRM_OCDM)
+     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${HAVE_DPI_DIRECTORY}/ocdm)
+     add_library(drmocdm ${LIBRARY_TYPE} ${PLAYREADY_SOURCES})
+-    target_link_libraries(drmocdm ocdm gstreamer-1.0 glib-2.0 gobject-2.0 gstaudio-1.0 gstapp-1.0 gstvideo-1.0 gstbase-1.0 WPEFrameworkProtocols WPEFrameworkDefinitions WPEFrameworkCore WPEFrameworkTracing )
++    target_link_libraries(drmocdm ocdmRialto gstreamer-1.0 glib-2.0 gobject-2.0 gstaudio-1.0 gstapp-1.0 gstvideo-1.0 gstbase-1.0 WPEFrameworkProtocols WPEFrameworkDefinitions WPEFrameworkCore WPEFrameworkTracing )
+     target_include_directories(drmocdm PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+     target_compile_options(drmocdm PRIVATE -fvisibility=hidden)
+     set_target_properties(drmocdm PROPERTIES OUTPUT_NAME "drmsystem")
