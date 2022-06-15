@@ -52,9 +52,13 @@ Netflix DAC app needs several things in order to build:
 * rialto, this requires access to the avbus-poc repo
 * netflix source tarball
 * meta-rdk-netflix repo
-* playready headers (0013-add-playready.patch is missing from meta-dac-sdk on purpose)
+* playready headers from officially licensed playeady SDK
 
 The actually run the netflix DAC app, it also requires a correct netflix vault file on the host under /opt/netflix-binfile.bin.
+
+Howto get playready-sdk.zip?
+* install your licensed playready SDK on your PC
+* zip the installed Device_PK_xxxx dir. Update/check the values for PV and ZIP_SUBDIR in meta-dac-sdk/recipes-core/playready-headers/playready-headers_4.2.bb
 
 Extra setup steps:
 >
@@ -62,7 +66,7 @@ Extra setup steps:
 	mkdir -p build/downloads
 	cp ~/from_somewhere/nrd-5.3.1-27d5e9003f.tar.gz build/downloads/nrd-5.3.1-27d5e9003f.tar.gz
 	touch build/downloads/nrd-5.3.1-27d5e9003f.tar.gz.done
-	cp ~/from_somewhere/0013-add-playready.patch meta-dac-sdk/recipes-example/netflix/files/
+	cp ~/from_somewhere/playready-sdk.zip build/downloads/
 	echo 'BBLAYERS += " ${TOPDIR}/../meta-rdk-netflix"' >> build/conf/bblayers.conf
 
 Build:

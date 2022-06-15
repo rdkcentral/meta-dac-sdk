@@ -13,7 +13,6 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 SRC_URI += "file://0004-set-noverify.patch"
 SRC_URI += "file://0010-stat-reserved-s32-build-fix.patch"
 SRC_URI += "file://0011-add-rialto.patch;patchdir=${WORKDIR}/git"
-SRC_URI += "file://0013-add-playready.patch;patchdir=${WORKDIR}/git"
 SRC_URI += "file://0020-remove-rdk-parts.patch;patchdir=${WORKDIR}/git"
 
 ### Remove part of rdk porting layer
@@ -33,6 +32,12 @@ do_configure_append(){
 SRC_URI_remove = "file://0001-Playready-cmake-changes_new.patch"
 
 RDEPENDS_${PN} += "gstreamer1.0-plugins-base-app gstreamer1.0-plugins-base-playback"
+
+### playready headers
+DEPENDS += "playready-headers"
+CXXFLAGS_remove = "-I${STAGING_INCDIR}/refsw"
+CXXFLAGS += "-I${STAGING_INCDIR}/playready"
+###
 
 ### Netflix as executable ###
 SRC_URI += "file://0012-exe-fixes.patch;patchdir=${WORKDIR}/git"
