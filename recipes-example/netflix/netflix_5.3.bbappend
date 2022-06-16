@@ -14,6 +14,7 @@ SRC_URI += "file://0004-set-noverify.patch"
 SRC_URI += "file://0010-stat-reserved-s32-build-fix.patch"
 SRC_URI += "file://0011-add-rialto.patch;patchdir=${WORKDIR}/git"
 SRC_URI += "file://0020-remove-rdk-parts.patch;patchdir=${WORKDIR}/git"
+SRC_URI += "file://0015-netflix-ui-in-1080p.patch;patchdir=${WORKDIR}/git"
 
 ### Remove part of rdk porting layer
 EXTRA_OECMAKE_remove = "-DGIBBON_PLATFORM=${S}/../../git/partner/platform/thunder-manager"
@@ -32,6 +33,12 @@ do_configure_append(){
 SRC_URI_remove = "file://0001-Playready-cmake-changes_new.patch"
 
 RDEPENDS_${PN} += "gstreamer1.0-plugins-base-app gstreamer1.0-plugins-base-playback"
+
+do_install_append() {
+  ## also needed for 1080p resolution
+  sed -i -e '/<config_data>/ a \        <font_glyph_cache_width>1536</font_glyph_cache_width>' ${D}/${NRD_INSTALL_PREFIX}/bin/data/etc/conf/oem.xml
+  sed -i -e '/<config_data>/ a \        <font_glyph_cache_height>1536</font_glyph_cache_height>' ${D}/${NRD_INSTALL_PREFIX}/bin/data/etc/conf/oem.xml
+}
 
 ### playready headers
 DEPENDS += "playready-headers"
