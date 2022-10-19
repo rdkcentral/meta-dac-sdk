@@ -8,7 +8,7 @@
 
 	# Install 'repo' tool from: https://android.googlesource.com/tools/repo
 	repo init -u https://github.com/stagingrdkm/lgpub/ -m manifests/dac-dunfell-3.1.6-manifest.xml
-	repo sync -v
+	repo sync -v -j$(getconf _NPROCESSORS_ONLN)
 
 	. ./oe-init-build-env
 	cp ../.repo/manifests/manifests/bblayers.conf conf/
@@ -23,6 +23,12 @@
 	# Also libglvnd is used to provide egl/gles/mesa
 	# To use mesa provider instead and not remove the gfx libraries:
 	#echo 'DISTRO_FEATURES_remove = "cleanup_gfx"' >> conf/local.conf
+
+	# Add the following to avoid parsing errors related to breakpad-wrapper:
+	#echo 'BBMASK += "${TOPDIR}/../meta-rdk-video/recipes-extended/cobalt/libloader-app_22.lts.stable.bb"' >> conf/local.conf
+	#echo 'BBMASK += "${TOPDIR}/../meta-rdk-video/recipes-extended/cobalt/cobalt-evergreen-src_git.bb"' >> conf/local.conf
+	# Add the following to avoid: github.com[0: 140.82.121.4]: errno=Connection timed out
+	#echo 'BBMASK += "${TOPDIR}/../meta-rdk-video/recipes-extended/rdkservices/wpeframework-clientlibraries_git.bb"' >> conf/local.conf
 
 	# Test OCI images
 	bitbake dac-image-wayland-egl-test
