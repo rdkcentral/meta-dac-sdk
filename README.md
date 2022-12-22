@@ -24,9 +24,6 @@
 	# To use mesa provider instead and not remove the gfx libraries:
 	#echo 'DISTRO_FEATURES_remove = "cleanup_gfx"' >> conf/local.conf
 
-	# Add the following to avoid parsing errors related to breakpad-wrapper:
-	#echo 'BBMASK += "${TOPDIR}/../meta-rdk-video/recipes-extended/cobalt/libloader-app_22.lts.stable.bb"' >> conf/local.conf
-	#echo 'BBMASK += "${TOPDIR}/../meta-rdk-video/recipes-extended/cobalt/cobalt-evergreen-src_git.bb"' >> conf/local.conf
 	# Add the following to avoid: github.com[0: 140.82.121.4]: errno=Connection timed out
 	#echo 'BBMASK += "${TOPDIR}/../meta-rdk-video/recipes-extended/rdkservices/wpeframework-clientlibraries_git.bb"' >> conf/local.conf
 
@@ -37,9 +34,10 @@
 	bitbake dac-image-essos-egl
 	bitbake dac-image-qt-test
 	bitbake dac-image-shell
+	bitbake dac-image-flutter-slide-puzzle
 
 	# Or build them all at once
-	bitbake dac-image-wayland-egl-test dac-image-wayland-egl-test-input dac-image-essos-sample dac-image-essos-egl dac-image-qt-test dac-image-shell
+	bitbake dac-image-wayland-egl-test dac-image-wayland-egl-test-input dac-image-essos-sample dac-image-essos-egl dac-image-qt-test dac-image-shell dac-image-flutter-slide-puzzle
 
 # Building Cobalt DAC app
 
