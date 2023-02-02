@@ -24,9 +24,6 @@
 	# To use mesa provider instead and not remove the gfx libraries:
 	#echo 'DISTRO_FEATURES_remove = "cleanup_gfx"' >> conf/local.conf
 
-	# Add the following to avoid: github.com[0: 140.82.121.4]: errno=Connection timed out
-	#echo 'BBMASK += "${TOPDIR}/../meta-rdk-video/recipes-extended/rdkservices/wpeframework-clientlibraries_git.bb"' >> conf/local.conf
-
 	# Test OCI images
 	bitbake dac-image-wayland-egl-test
 	bitbake dac-image-wayland-egl-test-input
@@ -41,11 +38,6 @@
 
 # Building Cobalt DAC app
 
-Cobalt DAC app needs rialto. This requires access to the avbus-poc repo. Extra setup steps:
->
-	git clone --branch master "https://code.rdkcentral.com/r/components/generic/avbus-poc"
-	cp avbus-poc/cobalt/libcobalt-21.lts.stable-6.patch meta-dac-sdk/recipes-example/cobalt/files/
-
 Build:
 >
 	bitbake dac-image-cobalt
@@ -53,7 +45,6 @@ Build:
 # Building Netflix DAC app
 
 Netflix DAC app needs several things in order to build:
-* rialto, this requires access to the avbus-poc repo
 * netflix source tarball
 * meta-rdk-netflix repo
 * playready headers from officially licensed playeady SDK

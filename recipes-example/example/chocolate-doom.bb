@@ -15,6 +15,7 @@ S = "${WORKDIR}/git/"
 SRC_URI = " \
     git://github.com/chocolate-doom/chocolate-doom.git;protocol=http;branch=master;rev=a378d0288a77ef8efff439c5e250e82b03e2c502 \
     file://sdl_gl_setattribute.patch \
+    file://0001-dont-generate-fonts.patch \
     http://distro.ibiblio.org/pub/linux/distributions/slitaz/sources/packages/d/doom1.wad;sha256sum=1d7d43be501e67d927e415e0b8f3e29c3bf33075e859721816f652a526cac771 \
     "
 

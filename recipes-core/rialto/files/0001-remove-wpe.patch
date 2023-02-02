@@ -1,70 +1,67 @@
-Index: git/ocdmRialto/CMakeLists.txt
+Index: git/CMakeLists.txt
 ===================================================================
---- git.orig/ocdmRialto/CMakeLists.txt
-+++ git/ocdmRialto/CMakeLists.txt
-@@ -7,7 +7,6 @@ set( CMAKE_CXX_STANDARD_REQUIRED ON )
- include( CheckCXXCompilerFlag )
+--- git.orig/CMakeLists.txt
++++ git/CMakeLists.txt
+@@ -30,7 +30,6 @@ include( CheckCXXCompilerFlag )
  
+ find_package( Rialto REQUIRED )
  find_package( ocdm REQUIRED )
 -find_package( WPEFramework REQUIRED )
  find_package( PkgConfig REQUIRED )
  pkg_check_modules( GStreamerApp REQUIRED IMPORTED_TARGET gstreamer-app-1.0 )
  
-Index: git/ocdmRialto/source/OpenCDMSession.cpp
+Index: git/source/OpenCDMSession.cpp
 ===================================================================
---- git.orig/ocdmRialto/source/OpenCDMSession.cpp
-+++ git/ocdmRialto/source/OpenCDMSession.cpp
-@@ -1,6 +1,8 @@
- #include <OpenCDMSession.h>
- #include <Utils.h>
+--- git.orig/source/OpenCDMSession.cpp
++++ git/source/OpenCDMSession.cpp
+@@ -20,7 +20,8 @@
+ #include "OpenCDMSession.h"
+ #include "MediaKeysClient.h"
+ #include "RialtoGStreamerEMEProtectionMetadata.h"
 -#include <WPEFramework/core/Trace.h>
-+//#include <WPEFramework/core/Trace.h>
 +#define TRACE_L1 printf
 +#define TRACE_L2 printf
  #include <gst/base/base.h>
  #include <gst/gst.h>
  #include <gst/gstprotection.h>
-Index: git/ocdmRialto/source/open_cdm.cpp
+Index: git/source/open_cdm.cpp
 ===================================================================
---- git.orig/ocdmRialto/source/open_cdm.cpp
-+++ git/ocdmRialto/source/open_cdm.cpp
-@@ -1,9 +1,12 @@
-+#include <cassert>
- #include <opencdm/open_cdm.h>
- 
+--- git.orig/source/open_cdm.cpp
++++ git/source/open_cdm.cpp
+@@ -23,7 +23,9 @@
  #include <OpenCDMSession.h>
  #include <OpenCDMSystem.h>
  #include <Utils.h>
 -#include <WPEFramework/core/Trace.h>
-+//#include <WPEFramework/core/Trace.h>
++#include <assert.h>
 +#define TRACE_L1 printf
 +#define TRACE_L2 printf
  
  OpenCDMSystem *opencdm_create_system(const char keySystem[])
  {
-Index: git/ocdmRialto/source/open_cdm_adapter.cpp
+Index: git/source/open_cdm_adapter.cpp
 ===================================================================
---- git.orig/ocdmRialto/source/open_cdm_adapter.cpp
-+++ git/ocdmRialto/source/open_cdm_adapter.cpp
-@@ -1,5 +1,7 @@
+--- git.orig/source/open_cdm_adapter.cpp
++++ git/source/open_cdm_adapter.cpp
+@@ -18,7 +18,8 @@
+  */
+ 
  #include <OpenCDMSession.h>
 -#include <WPEFramework/core/Trace.h>
-+//#include <WPEFramework/core/Trace.h>
 +#define TRACE_L1 printf
 +#define TRACE_L2 printf
  #include <opencdm/open_cdm_adapter.h>
  
  struct _GstCaps;
-Index: git/ocdmRialto/source/open_cdm_ext.cpp
+Index: git/source/open_cdm_ext.cpp
 ===================================================================
---- git.orig/ocdmRialto/source/open_cdm_ext.cpp
-+++ git/ocdmRialto/source/open_cdm_ext.cpp
-@@ -1,7 +1,9 @@
+--- git.orig/source/open_cdm_ext.cpp
++++ git/source/open_cdm_ext.cpp
+@@ -20,7 +20,8 @@
  #include <OpenCDMSession.h>
  #include <OpenCDMSystem.h>
  #include <Utils.h>
 -#include <WPEFramework/core/Trace.h>
-+//#include <WPEFramework/core/Trace.h>
 +#define TRACE_L1 printf
 +#define TRACE_L2 printf
  #include <opencdm/open_cdm_ext.h>

@@ -1,33 +1,30 @@
 SUMMARY = "Rialto"
-LICENSE = "CLOSED"
+LICENSE  = "Apache-2.0"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=327e572d11c37963726ba0b02d30cf2c"
 
-SRC_URI += "\
-  ${CMF_GIT_ROOT}/components/generic/avbus-poc;protocol=${CMF_GIT_PROTOCOL};branch=master \
-"
-
+SRC_URI = "${CMF_GITHUB_ROOT}/rialto;protocol=${CMF_GIT_PROTOCOL};branch=${CMF_GITHUB_MASTER_BRANCH}"
 SRCREV = "${AUTOREV}"
 
-PACKAGES =+ "${PN}-client ${PN}-server ${PN}-servermanager ${PN}-ocdm"
-
-DEPENDS = "openssl jsoncpp glib-2.0 gstreamer1.0 gstreamer1.0-plugins-base"
-RDEPENDS_${PN}-servermanager = "mongoose"
-
-PACKAGECONFIG[rialtoserver] = "-DRIALTOSERVER=ON, -DRIALTOSERVER=OFF, wpeframework-clientlibraries,"
-PACKAGECONFIG[rialtoservermanager] = "-DRIALTOSERVERMANAGER=ON, -DRIALTOSERVERMANAGER=OFF,mongoose"
-PACKAGECONFIG[rialtoclient] = "-DRIALTOCLIENT=ON, -DRIALTOCLIENT=OFF,,"
-PACKAGECONFIG[rialtoocdm]   = "-DRIALTOOCDM=ON, -DRIALTOOCDM=OFF,wpeframework-clientlibraries,"
-PACKAGECONFIG[rialtoipc]    = "-DUSE_RIALTO_IPC=ON, -DUSE_RIALTO_IPC=OFF,protobuf protobuf-native,protobuf"
-PACKAGECONFIG += "rialtoserver rialtoservermanager rialtoclient rialtoocdm rialtoipc"
+DEPENDS = "protobuf protobuf-native"
 
 S = "${WORKDIR}/git"
-inherit cmake
+inherit cmake coverity
 
-FILES_SOLIBSDEV = ""
-FILES_${PN}-server += "${bindir}/RialtoServerTest"
-FILES_${PN}-server += "${libdir}/libRialtoServer.so"
-FILES_${PN}-servermanager += "${bindir}/RialtoServerManagerTest"
-FILES_${PN}-servermanager += "${libdir}/libRialtoServerManager.so"
-FILES_${PN}-client += "${libdir}/libRialtoClient.so"
-FILES_${PN}-client += "${libdir}/gstreamer-1.0/libgstrialtosinks.so"
-FILES_${PN}-ocdm += "${libdir}/libocdmRialto.so"
-FILES_${PN}-ocdm += "${PKG_CONFIG_DIR}/*.pc"
+PACKAGES =+ "${PN}-client ${PN}-server ${PN}-servermanager-lib ${PN}-servermanager"
+
+PACKAGECONFIG[server] = "-DENABLE_SERVER=ON,-DENABLE_SERVER=OFF,wpeframework-clientlibraries gstreamer1.0 gstreamer1.0-plugins-base glib-2.0"
+PACKAGECONFIG[servermanager] = "-DENABLE_SERVER_MANAGER=ON,-DENABLE_SERVER_MANAGER=OFF,mongoose,"
+
+# The 'servermanager' package config has a runtime
+# dependency on the 'RialtoServer' executable and as such
+# requires the 'server' package config to be enabled as well.
+PACKAGECONFIG ??= "server servermanager"
+
+FILES_${PN}-client += "${libdir}/libRialtoClient.so.*"
+
+FILES_${PN}-server += "${bindir}/RialtoServer"
+
+FILES_${PN}-servermanager += "${bindir}/RialtoServerManagerSim"
+RDEPENDS_${PN}-servermanager += "${PN}-server"
+
+FILES_${PN}-servermanager-lib += "${libdir}/libRialtoServerManager.so.*"
