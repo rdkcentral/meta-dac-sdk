@@ -32,15 +32,17 @@
 	bitbake dac-image-qt-test
 	bitbake dac-image-shell
 	bitbake dac-image-flutter-slide-puzzle
+	bitbake dac-image-chocolate-doom
+	bitbake dac-image-cobalt
 
 	# Or build them all at once
 	bitbake dac-image-wayland-egl-test dac-image-wayland-egl-test-input dac-image-essos-sample dac-image-essos-egl dac-image-qt-test dac-image-shell dac-image-flutter-slide-puzzle
 
 # Building Cobalt DAC app
 
-Build:
->
-	bitbake dac-image-cobalt
+Use build target **dac-image-cobalt**.  By default cobalt evergreen is **not** enabled and libcobalt will be built and linked with cobalt-launcher. To enable cobalt evergreen lite make sure **cobalt_enable_evergreen_lite** DISTRO_FEATURE is set. See conf/layer.conf. In that case libloader-app will be built and linked to cobalt-launcher.
+
+However, currently this does not work on RPI target hosts: cobalt DAC app built with evergreen enabled, crashes on RPI. See comments in libcobalt_23.lts.stable.bbappend.
 
 # Building Netflix DAC app
 

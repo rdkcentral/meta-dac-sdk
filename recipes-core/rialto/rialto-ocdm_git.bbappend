@@ -5,5 +5,5 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 SRC_URI += "file://0001-remove-wpe.patch"
 SRC_URI += "file://0002-remove-ocdm-find.patch"
 
-# 29 Dec 2022
-SRCREV = "03e55e52f82841bd9ff3b9b87ef7b0c15436f8c8"
+# 1 Feb 2023
+SRCREV = "29dd8901dca49cb97522a79d2ba97700bfa8678e"
