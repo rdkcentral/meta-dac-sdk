@@ -21,16 +21,5 @@
     },
     "features": [],
     "mounts": [
-        {
-            "source": "/etc/ssl/certs",
-            "destination": "/usr/share/content/data/ssl/certs",
-            "type": "bind",
-            "options": [
-                "rbind",
-                "nosuid",
-                "nodev",
-                "ro"
-            ]
-        }
     ]
 }
