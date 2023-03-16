@@ -1,11 +1,6 @@
-DEPENDS += "rialto-ocdm"
-RDEPENDS_${PN}  += "rialto-gstreamer"
-DEPENDS += "protobuf3b-native"
-
 PACKAGECONFIG += "opencdm"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-SRC_URI += "file://0001-ocdmrialto.patch;patchdir=${WORKDIR}/starboard"
 SRC_URI += "file://0002-remove-rfc-api.patch;patchdir=${WORKDIR}/starboard"
 SRC_URI += "file://0003_skip_codec_checks.patch;patchdir=${WORKDIR}/starboard"
 SRC_URI += "file://0004-enable-vp9.patch;patchdir=${WORKDIR}/starboard"
