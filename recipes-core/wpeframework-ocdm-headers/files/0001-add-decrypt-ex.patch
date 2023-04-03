@@ -1,5 +1,12 @@
 decrypt_ex() Part of 0001-RDK-31882-Add-GstCaps-parsing-in-OCDM-to-wpeframework-clientlibraries.patch
 
+From 49dfcb724a8ca7ab69ba27ef7e43430d9f766335 Mon Sep 17 00:00:00 2001
+From: Douglas Adler <douglas_adler2@comcast.com>
+Date: Mon, 8 Mar 2021 16:14:38 +0000
+Subject: [PATCH] RDK-31882 : Add GstCaps parsing in OCDM to
+ wpeframework-clientlibraries
+Source: COMCAST
+
 diff --git a/Source/ocdm/adapter/open_cdm_adapter.h b/Source/ocdm/adapter/open_cdm_adapter.h
 index 02c06af..d9ff7cb 100644
 index 02c06af..bd8a36b 100644
