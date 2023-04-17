@@ -49,13 +49,13 @@ However, currently this does not work on RPI target hosts: cobalt DAC app built 
 Netflix DAC app needs several things in order to build:
 * netflix source tarball
 * meta-rdk-netflix repo
-* playready headers from officially licensed playeady SDK
+* playready headers recipe can be copied from here:
+  https://github.com/stagingrdkm/meta-dac-sdk/blob/master/recipes-core/playready-headers/playready-headers_4.2.bb
+* playready headers from officially licensed playeady SDK. Howto get the playready-sdk.zip?
+  * install your licensed playready SDK on your PC
+  * zip the installed Device_PK_xxxx dir. Update/check the values for PV and ZIP_SUBDIR in meta-dac-sdk/recipes-core/playready-headers/playready-headers_4.2.bb
 
-The actually run the netflix DAC app, it also requires a correct netflix vault file on the host under /opt/netflix-binfile.bin.
-
-Howto get playready-sdk.zip?
-* install your licensed playready SDK on your PC
-* zip the installed Device_PK_xxxx dir. Update/check the values for PV and ZIP_SUBDIR in meta-dac-sdk/recipes-core/playready-headers/playready-headers_4.2.bb
+To actually run the netflix DAC app, it also requires a correct netflix vault file on the host under /opt/netflix-binfile.bin.
 
 Extra setup steps:
 >
