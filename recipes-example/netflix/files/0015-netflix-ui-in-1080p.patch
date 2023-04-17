@@ -1,0 +1,15 @@
+Source: Liberty Global Service B.V.
+Index: git/partner/graphics/reference/graphics.xml
+===================================================================
+--- git.orig/partner/graphics/reference/graphics.xml
++++ git/partner/graphics/reference/graphics.xml
+@@ -33,5 +33,9 @@
+         </effects>
+       </gibbon>
+     </capabilities>
++    <screen_width>1920</screen_width>
++    <screen_height>1080</screen_height>
++    <ui_width>1920</ui_width>
++    <ui_height>1080</ui_height>
+   </config_data>
+ </config_root>

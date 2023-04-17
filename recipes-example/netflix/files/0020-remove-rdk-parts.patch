@@ -1,0 +1,356 @@
+Source: Liberty Global Service B.V.
+Index: git/partner/dpi/gstreamer/FileSystem.h
+===================================================================
+--- git.orig/partner/dpi/gstreamer/FileSystem.h
++++ git/partner/dpi/gstreamer/FileSystem.h
+@@ -28,25 +28,8 @@
+ #include "Module.h"
+ 
+ #include "ThunderLink.h"
+-/* TODO: RDKservices event handling seems to have a bug whereby Api invocations fail after an event is received. Resorting to
+-IARM based event handling till this is resolved. DELIA-43952 */
+-#if defined(USE_DISPLAY_SETTINGS) || !defined (ENABLE_THUNDER_EVENTS)
+-#include <libIARM.h>
+-#include <libIBus.h>
+-#include "libIBusDaemon.h"
+-#include "dsMgr.h"
+-#include "dsDisplay.h"
+-#include <iarmUtil.h>
+-#include "pwrMgr.h"
+-
+-static void dsHdmiEventHandler(const char *owner, IARM_EventId_t eventId, void *data, size_t len);
+-static void DisplResolutionHandler(const char *owner, IARM_EventId_t eventId, void *data, size_t len);
+-static void AudioModeHandler(const char *owner, IARM_EventId_t eventId, void *data, size_t len);
+-static void PowerModeHandler(const char *owner, IARM_EventId_t eventId, void *data, size_t len);
+-#elif defined(ENABLE_THUNDER_EVENTS)
+ //Thunder Event handler
+ static void thunderEventCallback(netflix::device::thunderlink::Event eventtype);
+-#endif
+ 
+ #ifdef SUPPORT_NATIVEFRAMERATE
+ bool getNfrStatus();
+Index: git/partner/dpi/gstreamer/FileSystem.cpp
+===================================================================
+--- git.orig/partner/dpi/gstreamer/FileSystem.cpp
++++ git/partner/dpi/gstreamer/FileSystem.cpp
+@@ -257,18 +257,9 @@ FileSystem::FileSystem(std::string *erro
+     /*TODO: RDKservices event handling seems to have a bug whereby Api invocations fail after an event is received. Resorting to
+      IARM based event handling till this is resolved. DELIA-43952 */
+ 
+-#if defined(USE_DISPLAY_SETTINGS) || !defined(ENABLE_THUNDER_EVENTS)
+-    printf("registering DSMGR events...\n");
+-    IARM_Bus_RegisterEventHandler(IARM_BUS_DSMGR_NAME,IARM_BUS_DSMGR_EVENT_HDMI_HOTPLUG, dsHdmiEventHandler);
+-    IARM_Bus_RegisterEventHandler(IARM_BUS_DSMGR_NAME,IARM_BUS_DSMGR_EVENT_HDCP_STATUS, dsHdmiEventHandler);
+-    IARM_Bus_RegisterEventHandler(IARM_BUS_DSMGR_NAME,IARM_BUS_DSMGR_EVENT_RES_POSTCHANGE, DisplResolutionHandler);
+-    IARM_Bus_RegisterEventHandler(IARM_BUS_DSMGR_NAME,IARM_BUS_DSMGR_EVENT_AUDIO_MODE, AudioModeHandler);
+-    IARM_Bus_RegisterEventHandler(IARM_BUS_PWRMGR_NAME,IARM_BUS_PWRMGR_EVENT_MODECHANGED, PowerModeHandler);
+-#elif defined (ENABLE_THUNDER_EVENTS)
+     printf("subscribing to thunder events...\n");
+     syslog(LOG_INFO, "%s: %d ThunderLink : Event Notifications from Thunder : %s", __FUNCTION__, __LINE__, \
+ 	ThunderLink::getinstance()->registerCallback(thunderEventCallback) == WPEFramework::Core::ERROR_NONE ? "Enabled" : "Failed");
+-#endif
+ 
+     suspendOnStart_ = suspendModeOnStart();
+     setSupportedVideoOutputs(true);
+@@ -276,148 +267,6 @@ FileSystem::FileSystem(std::string *erro
+ 
+ }
+ 
+-#if defined(USE_DISPLAY_SETTINGS) || !defined(ENABLE_THUNDER_EVENTS)
+-static void DisplResolutionHandler(const char *owner, IARM_EventId_t eventId, void *data, size_t len)
+-{
+-
+-  printf("%s enter\n", __FUNCTION__);
+-  switch (eventId) {
+-    case IARM_BUS_DSMGR_EVENT_RES_PRECHANGE:
+-      printf("Received IARM_BUS_DSMGR_EVENT_RES_PRECHANGE \n");
+-      break;
+-    case IARM_BUS_DSMGR_EVENT_RES_POSTCHANGE:
+-      {
+-#ifdef SUPPORT_NATIVEFRAMERATE
+-        if (!sConfiguration->supportFollowVideoSourceFrameRate)
+-#endif
+-        {
+-          int dw = 1280;
+-          int dh = 720;
+-
+-          IARM_Bus_DSMgr_EventData_t *eventData = (IARM_Bus_DSMgr_EventData_t *)data;
+-          dw = eventData->data.resn.width ;
+-          dh = eventData->data.resn.height ;
+-
+-          printf("Received IARM_BUS_DSMGR_EVENT_RES_POSTCHANGE  event width:%d height:%d\n", dw, dh);
+-
+-          if(nrdApp() && nrdApp()->getDeviceLib() && nrdApp()->getSystem())
+-          {
+-            FileSystem* fs = static_cast<FileSystem*>(nrdApp()->getSystem().get());
+-            if(fs) fs->setSupportedVideoOutputs(false);
+-          }
+-        }
+-      }
+-      break;
+-
+-    default:
+-      printf("Received unknown event %d\n", eventId);
+-      break;
+-  }
+-}
+-
+-void AudioModeHandler(const char *owner, IARM_EventId_t eventId, void *data, size_t len)
+-{
+-  printf("%s enter Event id is %d\n", __FUNCTION__, eventId);
+-  switch (eventId) {
+-    case IARM_BUS_DSMGR_EVENT_AUDIO_MODE:
+-      {
+-        printf("Received IARM_BUS_DSMGR_EVENT_AUDIO_MODE \n");
+-
+-        if(nrdApp() && nrdApp()->getDeviceLib() && nrdApp()->getSystem())
+-        {
+-          FileSystem* fs = static_cast<FileSystem*>(nrdApp()->getSystem().get());
+-          if(fs) fs->setSupportedAudioOutputs();
+-        }
+-      }
+-      break;
+-    default:
+-      printf("Received unknown event %d\n", eventId);
+-      break;
+-  }
+-}
+-
+-void PowerModeHandler(const char *owner, IARM_EventId_t eventId, void *data, size_t len)
+-{
+-  printf("%s enter Event id is %d\n", __FUNCTION__, eventId);
+-  if (eventId == IARM_BUS_PWRMGR_EVENT_MODECHANGED ) {
+-    IARM_Bus_PWRMgr_EventData_t *param = (IARM_Bus_PWRMgr_EventData_t *)data;
+-    printf("Event IARM_BUS_PWRMGR_EVENT_MODECHANGED: State Changed %d -- > %d\n",
+-                     param->data.state.curState, param->data.state.newState);
+-    if (((param->data.state.curState == IARM_BUS_PWRMGR_POWERSTATE_STANDBY) || (param->data.state.curState == IARM_BUS_PWRMGR_POWERSTATE_STANDBY_LIGHT_SLEEP))
+-    && (param->data.state.newState == IARM_BUS_PWRMGR_POWERSTATE_ON)) {
+-      standbyWakeup=true;
+-      time(&gwakeuptime);
+-    }
+-
+-  }
+-}
+-
+-void dsHdmiEventHandler(const char *owner, IARM_EventId_t eventId, void *data, size_t len)
+-{
+-  printf("%s enter\n", __FUNCTION__);
+-  switch (eventId) {
+-    case IARM_BUS_DSMGR_EVENT_HDMI_HOTPLUG :
+-      {
+-
+-        IARM_Bus_DSMgr_EventData_t *eventData = (IARM_Bus_DSMgr_EventData_t *)data;
+-        int hdmi_hotplug_event = eventData->data.hdmi_hpd.event;
+-
+-        const char *hdmihotplug = (hdmi_hotplug_event == dsDISPLAY_EVENT_CONNECTED) ? "connected" : "disconnected";
+-        printf("Received IARM_BUS_DSMGR_EVENT_HDMI_HOTPLUG  event data:%d status: %s\n", hdmi_hotplug_event, hdmihotplug);
+-
+-        if(hdmi_hotplug_event != dsDISPLAY_EVENT_CONNECTED) {
+-          // Disconnected, set the HDMI Preferences to auto
+-          printf("Received IARM_BUS_DSMGR_EVENT_HDMI_HOTPLUG Disconnected calling SetHdmiPreferences\n");
+-	  //Thunder call to SetHdmiPreferences from SOCUtility
+-          DeviceLibNative::getSOCUtilitiesInstance()->SetHdmiPreferences(HDCP_MAX);
+-        }
+-#ifdef SUPPORT_NATIVEFRAMERATE
+-        else {
+-          FileSystem* fileSystem = static_cast<FileSystem*>(nrdApp()->getSystem().get());
+-          if (fileSystem)
+-          {
+-            fileSystem->mSystemMonitor->clearDynamicFrameRateMap();
+-            fileSystem->mSystemMonitor->createDynamicFrameRateMap();
+-          }
+-        }
+-#endif
+-
+-        if(nrdApp() && nrdApp()->getDeviceLib() && nrdApp()->getSystem())
+-        {
+-          FileSystem* fs = static_cast<FileSystem*>(nrdApp()->getSystem().get());
+-          if(fs) fs->setSupportedVideoOutputs(false);
+-          if(fs) fs->setSupportedAudioOutputs();
+-        }
+-
+-      }
+-      break;
+-
+-    case IARM_BUS_DSMGR_EVENT_HDCP_STATUS :
+-      {
+-#ifdef SUPPORT_NATIVEFRAMERATE
+-        if (!sConfiguration->supportFollowVideoSourceFrameRate)
+-#endif
+-        {
+-          IARM_Bus_DSMgr_EventData_t *eventData = (IARM_Bus_DSMgr_EventData_t *)data;
+-          int hdcpStatus = eventData->data.hdmi_hdcp.hdcpStatus;
+-          const char *hdcpStatusStr = (hdcpStatus == dsHDCP_STATUS_AUTHENTICATED) ? "authenticated" : "authentication failure";
+-          printf("Received IARM_BUS_DSMGR_EVENT_HDCP_STATUS  event data:%d status:%s\n", hdcpStatus, hdcpStatusStr);
+-
+-          if(nrdApp() && nrdApp()->getDeviceLib() && nrdApp()->getSystem())
+-          {
+-            FileSystem* fs = static_cast<FileSystem*>(nrdApp()->getSystem().get());
+-            if(fs) fs->setSupportedVideoOutputs(false);
+-         }
+-        }
+-      }
+-      break;
+-
+-    default:
+-      printf("Received unknown IARM bus event:%d\n", eventId);
+-      break;
+-  }
+-}
+-#elif defined(ENABLE_THUNDER_EVENTS) //enable Thunder event handlers when DELIA-43952 is resolved
+ static void thunderEventCallback(thunderlink::Event event)
+ {
+   FileSystem* fs;
+@@ -452,7 +301,6 @@ static void thunderEventCallback(thunder
+       syslog(LOG_ERR, "%s: %d Received Unknown Thunder event\n", __FUNCTION__, __LINE__);
+   }
+ }
+-#endif
+ 
+ FileSystem::~FileSystem()
+ {
+@@ -665,7 +513,7 @@ static bool x_AddHDProfile(std::vector<C
+   return retVal;
+ }
+ 
+-static bool x_ConfirmHDRSupport(std::vector<ContentProfile>& profiles, vector<HdrFormats> capabilities, bool bHDR10, bool bDolbyVision)
++static bool x_ConfirmHDRSupport(std::vector<ContentProfile>& profiles, std::vector<HdrFormats> capabilities, bool bHDR10, bool bDolbyVision)
+ {
+   bool retVal = false;
+   if(bHDR10) {
+@@ -819,7 +667,7 @@ void FileSystem::setSupportedVideoOutput
+   uint32_t heightCM         = 0;
+   uint32_t widthCM          = 0;
+ 
+-  vector<HdrFormats> hdrCapabilities;
++  std::vector<HdrFormats> hdrCapabilities;
+   PlaybackResolution _Resolution;
+   HdcpParams params;
+ 
+@@ -1147,15 +995,6 @@ void FileSystem::init(std::shared_ptr<IS
+ 
+ void FileSystem::shutdown()
+ {
+-#if defined (USE_DISPLAY_SETTINGS) || !defined (ENABLE_THUNDER_EVENTS)
+-  printf("filesystem()::shutdown() unregistering IARM DSMGR events...\n");
+-  IARM_Bus_UnRegisterEventHandler(IARM_BUS_DSMGR_NAME,IARM_BUS_DSMGR_EVENT_HDMI_HOTPLUG);
+-  IARM_Bus_UnRegisterEventHandler(IARM_BUS_DSMGR_NAME,IARM_BUS_DSMGR_EVENT_HDCP_STATUS);
+-  IARM_Bus_UnRegisterEventHandler(IARM_BUS_DSMGR_NAME,IARM_BUS_DSMGR_EVENT_RES_POSTCHANGE);
+-  IARM_Bus_UnRegisterEventHandler(IARM_BUS_DSMGR_NAME,IARM_BUS_DSMGR_EVENT_AUDIO_MODE);
+-  IARM_Bus_UnRegisterEventHandler(IARM_BUS_PWRMGR_NAME,IARM_BUS_PWRMGR_EVENT_MODECHANGED);
+-#endif
+-
+     mCommonSystem->shutdown();
+     mEventDispatcher.reset();
+ }
+@@ -2015,61 +1854,6 @@ void FileSystem::setNFRCapability(bool n
+ std::list<FrameRate> FileSystem::getFramerates()
+ {
+   std::list<FrameRate> frameRateList;
+-#if defined(USE_DISPLAY_SETTINGS) || !defined(ENABLE_THUNDER_EVENTS)
+-
+-  std::map<FrameRate, FrameRate>::iterator it;
+-
+-  PlaybackResolution currentResolution = RESOLUTION_UNKNOWN;
+-
+-  uint32_t ret = ThunderLink::getinstance()->getCurrentResolutionFromDispSettings(currentResolution);
+-  std::string currentResolutionStr = ThunderLink::getinstance()->getResolutionToString(currentResolution);
+-
+-  ::device::VideoOutputPort &vPort = ::device::Host::getInstance().getVideoOutputPort("HDMI0");
+-  const ::device::List<::device::VideoResolution > supportedResolutions = ::device::VideoOutputPortConfig::getInstance().getPortType(vPort.getType().getId()).getSupportedResolutions();
+-  for (size_t j = 0; j < supportedResolutions.size(); j++)
+-  {
+-     const ::device::VideoResolution &resolution = supportedResolutions.at(j);
+-     std::string resolutionName = resolution.getName();
+-
+-     if (resolutionName.find(currentResolutionStr) != string::npos)
+-     {
+-       int dsFrameRate = resolution.getFrameRate().getId();
+-       switch (dsFrameRate)
+-       {
+-          case dsVIDEO_FRAMERATE_23dot98:
+-            frameRateList.push_back(FRAMERATE_23_976);
+-            break;
+-          case dsVIDEO_FRAMERATE_24:
+-            frameRateList.push_back(FRAMERATE_24);
+-            break;
+-          case dsVIDEO_FRAMERATE_25:
+-            frameRateList.push_back(FRAMERATE_25);
+-            break;
+-          case dsVIDEO_FRAMERATE_29dot97:
+-            frameRateList.push_back(FRAMERATE_29_97);
+-            break;
+-          case dsVIDEO_FRAMERATE_30:
+-            frameRateList.push_back(FRAMERATE_30);
+-            break;
+-          case dsVIDEO_FRAMERATE_50:
+-            frameRateList.push_back(FRAMERATE_50);
+-            break;
+-          case dsVIDEO_FRAMERATE_59dot94:
+-            frameRateList.push_back(FRAMERATE_59_94);
+-            break;
+-          case dsVIDEO_FRAMERATE_60:
+-            frameRateList.push_back(FRAMERATE_60);
+-            break;
+-          case dsVIDEO_FRAMERATE_UNKNOWN:
+-          default:
+-            printf("%s::%s:%d  dsVIDEO_FRAMERATE_UNKNOWN\n",__FILE__, __FUNCTION__, __LINE__) ;
+-            break;
+-       }
+-     }
+-  }
+-
+-
+-#endif
+   return frameRateList;
+ }
+ 
+Index: git/partner/dpi/gstreamer/FilePreApp.cpp
+===================================================================
+--- git.orig/partner/dpi/gstreamer/FilePreApp.cpp
++++ git/partner/dpi/gstreamer/FilePreApp.cpp
+@@ -22,7 +22,6 @@
+ #include <stdint.h>
+ #include <string.h>
+ #include <errno.h>
+-#include <rtRemote.h>
+ #include <nrd/NrdApplication.h>     // For getEsn()
+ #include <nrd/ISystem.h>
+ #if defined(USE_VAP_PLUGINS)
+Index: git/partner/dpi/gstreamer/SOCUtilities.cpp
+===================================================================
+--- git.orig/partner/dpi/gstreamer/SOCUtilities.cpp
++++ git/partner/dpi/gstreamer/SOCUtilities.cpp
+@@ -9,7 +9,6 @@
+ #include "gst_svp_meta.h"
+ #endif
+ 
+-using namespace device;
+ using namespace netflix;
+ using namespace netflix::device;
+ using namespace netflix::device::esplayer;
+Index: git/partner/dpi/gstreamer/CMakeLists.txt
+===================================================================
+--- git.orig/partner/dpi/gstreamer/CMakeLists.txt
++++ git/partner/dpi/gstreamer/CMakeLists.txt
+@@ -133,7 +133,6 @@ if("${RDK_SVP}" STREQUAL "ENABLED")
+ endif()
+ 
+ include_directories($ENV{STAGING_DIR}/usr/include/WPEFramework)
+-list(APPEND LIBRARIES IARMBus)
+ list(APPEND LIBRARIES WPEFrameworkCore WPEFrameworkDefinitions WPEFrameworkProtocols WPEFrameworkPlugins WPEFrameworkSecurityUtil)
+ list(APPEND SOURCES ThunderLink.cpp)
+ list(APPEND SOURCES Module.cpp)
+Index: git/partner/dpi/gstreamer/DeviceLibNative.cpp
+===================================================================
+--- git.orig/partner/dpi/gstreamer/DeviceLibNative.cpp
++++ git/partner/dpi/gstreamer/DeviceLibNative.cpp
+@@ -617,7 +617,7 @@ static void x_SetAdditionalConfiguration
+       pConfig->hevcEnabled     = true;
+ 
+       // Does the device (not the TV) support HDR
+-      vector<HdrFormats> hdr;
++      std::vector<HdrFormats> hdr;
+       if(WPEFramework::Core::ERROR_NONE == ThunderLink::getinstance()->getSettopHDRSupport(hdr))
+       {
+         for(auto it = hdr.begin(); it != hdr.end(); it++)

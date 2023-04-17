@@ -1,0 +1,25 @@
+{
+    "id": "com.rdk.cobalt",
+    "type": "application/vnd.rdk-app.dac.native",
+    "version": "1.0.0",
+    "description": "DAC port of cobalt application",
+    "priority": "optional",
+    "graphics": true,
+    "network": {
+        "type": "open"
+    },
+    "storage": {
+        "persistent": [
+            {
+                "size": "10M",
+                "path": "/home/root"
+            }
+        ]
+    },
+    "resources": {
+        "ram": "128M"
+    },
+    "features": [],
+    "mounts": [
+    ]
+}

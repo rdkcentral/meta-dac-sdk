@@ -1,0 +1,21 @@
+Source: Liberty Global Service B.V.
+Index: netflix/src/platform/gibbon/resources/js/boot.js
+===================================================================
+--- netflix.orig/src/platform/gibbon/resources/js/boot.js
++++ netflix/src/platform/gibbon/resources/js/boot.js
+@@ -5984,7 +5984,7 @@ function declareCommandLineOptions() {
+         trace_msl_service_tokens: ['trace_msl_service_tokens', false],
+         trace_msl_store: ['trace_msl_store', false],
+         mslFallbackTimer: ['mslFallbackTimer', true],
+-        noverify: ['noverify', false],
++        noverify: ['noverify', true],
+         unauth: ['unauth', false],
+         compress: ['compress', ''],
+         mslClear: ['mslClear', false],
+@@ -52699,4 +52699,4 @@ module.exports = null;
+ 
+ /***/ })
+ /******/ ]);
+-//# sourceMappingURL=boot.max.js.map
+\ No newline at end of file
++//# sourceMappingURL=boot.max.js.map

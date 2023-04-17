@@ -34,6 +34,6 @@ do_rootfs_append() {
         sys.exit(1)
     else:
         desired_path = path.abspath(path.join(str(d.getVar('D')), "..", "rootfs", "appmetadata.json"))
-        system(f"cp {appmetadata_path} {desired_path}")
+        system(f"cp -f {appmetadata_path} {desired_path}")
 }
 

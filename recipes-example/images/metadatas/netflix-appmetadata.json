@@ -1,0 +1,38 @@
+{
+    "id": "com.rdk.netflix",
+    "type": "application/vnd.rdk-app.dac.native",
+    "version": "1.0.0",
+    "description": "DAC port of netflix application",
+    "priority": "optional",
+    "graphics": true,
+    "network": {
+        "type": "open"
+    },
+    "storage": {
+        "persistent": [
+            {
+                "size": "10M",
+                "path": "/home/root"
+            },
+            {
+                "size": "10M",
+                "path": "/opt/netflix"
+            }
+        ]
+    },
+    "resources": {
+        "ram": "128M"
+    },
+    "features": [],
+    "mounts": [
+        {
+            "source": "/opt/netflix-binfile.bin",
+            "destination": "/opt/netflix-binfile.bin",   
+            "type": "bind",
+            "options": [
+                "rbind",
+                "ro"
+            ]
+        }
+    ]
+}

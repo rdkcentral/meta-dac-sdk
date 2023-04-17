@@ -1,0 +1,14 @@
+Source: Liberty Global Service B.V.
+Index: git/src/third_party/starboard/rdk/rpi/configuration_constants.cc
+===================================================================
+--- git.orig/src/third_party/starboard/rdk/rpi/configuration_constants.cc
++++ git/src/third_party/starboard/rdk/rpi/configuration_constants.cc
+@@ -73,7 +73,7 @@ const bool kSbHasAc3Audio = true;
+ 
+ // Specifies whether this platform has webm/vp9 support.  This should be set to
+ // non-zero on platforms with webm/vp9 support.
+-const bool kSbHasMediaWebmVp9Support = false;
++const bool kSbHasMediaWebmVp9Support = true;
+ 
+ // On default Linux desktop, you must be a superuser in order to set real time
+ // scheduling on threads.

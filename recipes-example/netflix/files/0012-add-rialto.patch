@@ -1,0 +1,29 @@
+Source: Liberty Global Service B.V.
+Index: git/brcm/rdk_gstreamer_utils_soc.cpp
+===================================================================
+--- git.orig/brcm/rdk_gstreamer_utils_soc.cpp
++++ git/brcm/rdk_gstreamer_utils_soc.cpp
+@@ -106,8 +106,8 @@ namespace rdk_gstreamer_utils
+     GstElement * configureUIAudioSink_soc(bool TTSenabled)
+     {
+         GstElement *audioSink = NULL;
+-        LOG_RGU("configureUIAudioSink_soc: : connecting autoaudiosink");
+-        audioSink = gst_element_factory_make ("autoaudiosink","autoaudiosink");
++        LOG_RGU("configureUIAudioSink_soc: : connecting rialtouiaudiosink");
++        audioSink = gst_element_factory_make ("rialtouiaudiosink","rialtouiaudiosink");
+ 
+         return audioSink;
+     }
+Index: git/rdk_gstreamer_utils.cpp
+===================================================================
+--- git.orig/rdk_gstreamer_utils.cpp
++++ git/rdk_gstreamer_utils.cpp
+@@ -78,7 +78,7 @@ namespace rdk_gstreamer_utils {
+     {
+         const char* audiodecodername = getAudioDecoderName_soc();
+         GstElement* audiodecoder = retrieveGstElementByName(pipeline, audiodecodername);
+-        GstElement* videodecoder = retrieveGstElementByName(pipeline, "westerossink"); //default on RDK platforms
++        GstElement* videodecoder = retrieveGstElementByName(pipeline, "rialtovideoappsink");
+         const char* AudioUnderflowSignal = getAudioUnderflowSignalName_soc();
+         const char* VideoUnderflowSignal = getVideoUnderflowSignalName_soc();
+ 

@@ -1,0 +1,298 @@
+Source: Liberty Global Service B.V.
+Index: starboard/src/third_party/starboard/rdk/shared/rdkservices.h
+===================================================================
+--- starboard.orig/src/third_party/starboard/rdk/shared/rdkservices.h
++++ starboard/src/third_party/starboard/rdk/shared/rdkservices.h
+@@ -32,9 +32,9 @@ namespace rdk {
+ namespace shared {
+ 
+ struct ResolutionInfo {
+-  ResolutionInfo() {}
++  ResolutionInfo() {};
+   ResolutionInfo(uint32_t w, uint32_t h)
+-    : Width(w), Height(h) {}
++    : Width(w), Height(h) {};
+   uint32_t Width { 1920 };
+   uint32_t Height { 1080 };
+ };
+@@ -50,56 +50,56 @@ public:
+     kHdrTechnicolor = (1u << 4),
+   };
+ 
+-  static ResolutionInfo GetResolution();
+-  static float GetDiagonalSizeInInches();
+-  static uint32_t GetHDRCaps();
++  static ResolutionInfo GetResolution() {return ResolutionInfo();}
++  static float GetDiagonalSizeInInches() {return 42;}
++  static uint32_t GetHDRCaps() {return 0u;}
+ };
+ 
+ class DeviceIdentification {
+ public:
+-  static std::string GetChipset();
+-  static std::string GetFirmwareVersion();
++  static std::string GetChipset() {return "";}
++  static std::string GetFirmwareVersion() {return "";}
+ };
+ 
+ class NetworkInfo {
+ public:
+-  static bool IsConnectionTypeWireless();
+-  static bool IsDisconnected();
++  static bool IsConnectionTypeWireless() {return false;}
++  static bool IsDisconnected() {return false;}
+ };
+ 
+ class TextToSpeech {
+ public:
+-  static bool IsEnabled();
+-  static void Speak(const std::string& text);
+-  static void Cancel();
++  static bool IsEnabled() {return false;}
++  static void Speak(const std::string& text) {}
++  static void Cancel() {}
+ };
+ 
+ class Accessibility {
+ public:
+-  static void SetSettings(const std::string& json);
+-  static bool GetSettings(std::string& out_json);
+-  static bool GetCaptionSettings(SbAccessibilityCaptionSettings* out);
+-  static bool GetDisplaySettings(SbAccessibilityDisplaySettings* out);
++  static void SetSettings(const std::string& json) {}
++  static bool GetSettings(std::string& out_json) {return false;}
++  static bool GetCaptionSettings(SbAccessibilityCaptionSettings* out) {return false;}
++  static bool GetDisplaySettings(SbAccessibilityDisplaySettings* out) {return false;}
+ };
+ 
+ class SystemProperties {
+ public:
+-  static void SetSettings(const std::string& json);
+-  static bool GetSettings(std::string& out_json);
+-  static bool GetChipset(std::string &out);
+-  static bool GetFirmwareVersion(std::string &out);
+-  static bool GetIntegratorName(std::string &out);
+-  static bool GetBrandName(std::string &out);
+-  static bool GetModelName(std::string &out);
+-  static bool GetModelYear(std::string &out);
+-  static bool GetFriendlyName(std::string &out);
+-  static bool GetDeviceType(std::string &out);
++  static void SetSettings(const std::string& json) {}
++  static bool GetSettings(std::string& out_json) {return false;}
++  static bool GetChipset(std::string &out) {return false;}
++  static bool GetFirmwareVersion(std::string &out) {return false;}
++  static bool GetIntegratorName(std::string &out) {return false;}
++  static bool GetBrandName(std::string &out) {return false;}
++  static bool GetModelName(std::string &out) {return false;}
++  static bool GetModelYear(std::string &out) {return false;}
++  static bool GetFriendlyName(std::string &out) {return false;}
++  static bool GetDeviceType(std::string &out){return false;}
+ };
+ 
+ class AuthService {
+ public:
+-  static bool IsAvailable();
+-  static bool GetExperience(std::string &out);
++  static bool IsAvailable() {return false;}
++  static bool GetExperience(std::string &out) {return false;}
+ };
+ 
+ 
+Index: starboard/src/third_party/starboard/rdk/shared/system/system_get_device_type.cc
+===================================================================
+--- starboard.orig/src/third_party/starboard/rdk/shared/system/system_get_device_type.cc
++++ starboard/src/third_party/starboard/rdk/shared/system/system_get_device_type.cc
+@@ -14,13 +14,13 @@
+ #include "starboard/system.h"
+ #include "starboard/string.h"
+ 
+-#include <core/Enumerate.h>
++// #include <core/Enumerate.h>
+ 
+ #include "third_party/starboard/rdk/shared/rdkservices.h"
+ #include "third_party/starboard/rdk/shared/log_override.h"
+ 
+ using namespace third_party::starboard::rdk::shared;
+-
++/*
+ namespace WPEFramework {
+ 
+ ENUM_CONVERSION_HANDLER(SbSystemDeviceType);
+@@ -37,8 +37,9 @@ ENUM_CONVERSION_BEGIN(SbSystemDeviceType
+ ENUM_CONVERSION_END(SbSystemDeviceType);
+ 
+ }
+-
++*/
+ SbSystemDeviceType SbSystemGetDeviceType() {
++/*
+   std::string prop;
+   if (SystemProperties::GetDeviceType(prop)) {
+     WPEFramework::Core::EnumerateType<SbSystemDeviceType> converted(prop.c_str(), false);
+@@ -57,5 +58,6 @@ SbSystemDeviceType SbSystemGetDeviceType
+     }
+   }
+   SB_LOG(INFO) << "DeviceType: 'SetTopBox'";
++*/
+   return kSbSystemDeviceTypeSetTopBox;
+ }
+Index: starboard/src/third_party/starboard/rdk/shared/linux_key_mapping.h
+===================================================================
+--- starboard.orig/src/third_party/starboard/rdk/shared/linux_key_mapping.h
++++ starboard/src/third_party/starboard/rdk/shared/linux_key_mapping.h
+@@ -30,7 +30,7 @@ namespace shared {
+ 
+ class LinuxKeyMapping {
+ public:
+-  static void MapKeyCodeAndModifiers(uint32_t& key_code, uint32_t& modifiers);
++  static void MapKeyCodeAndModifiers(uint32_t& key_code, uint32_t& modifiers) {};
+ };
+ 
+ }  // namespace shared
+Index: starboard/src/third_party/starboard/rdk/shared/BUILD.gn
+===================================================================
+--- starboard.orig/src/third_party/starboard/rdk/shared/BUILD.gn
++++ starboard/src/third_party/starboard/rdk/shared/BUILD.gn
+@@ -55,28 +55,6 @@ pkg_config("gstreamer") {
+   ]
+ }
+ 
+-pkg_config("wpeframework") {
+-  packages = [
+-    "WPEFrameworkCore",
+-    "WPEFrameworkDefinitions",
+-    "WPEFrameworkWebSocket",
+-  ]
+-}
+-
+-if (rdk_enable_cryptography) {
+-  pkg_config("cryptography") {
+-    packages = [ "WPEFrameworkCryptography" ]
+-    defines = [ "HAS_CRYPTOGRAPHY=1" ]
+-  }
+-}
+-
+-if (rdk_enable_securityagent) {
+-  pkg_config("securityagent") {
+-    packages = [ "securityagent" ]
+-    defines = [ "HAS_SECURITY_AGENT=1" ]
+-  }
+-}
+-
+ if (rdk_enable_ocdm) {
+   pkg_config("ocdmRialto") {
+     packages = [ "ocdmRialto" ]
+@@ -347,10 +325,9 @@ static_library("starboard_platform") {
+     "//starboard/shared/stub/window_update_on_screen_keyboard_suggestions.cc",
+ 
+     # RDK implementation
+-    "accessibility_data.cc",
+-    "accessibility_get_caption_settings.cc",
+-    "accessibility_get_display_settings.cc",
+-    "accessibility_set_captions_enabled.cc",
++    "//starboard/shared/stub/accessibility_get_caption_settings.cc",
++    "//starboard/shared/stub/accessibility_get_display_settings.cc",
++    "//starboard/shared/stub/accessibility_set_captions_enabled.cc",
+     "application_rdk.cc",
+     "audio_sink/audio_sink_is_audio_sample_type_supported.cc",
+     "audio_sink/gstreamer_audio_sink_type.cc",
+@@ -361,14 +338,11 @@ static_library("starboard_platform") {
+     "drm/drm_system_ocdm.cc",
+     "drm/gst_decryptor_ocdm.cc",
+     "ess_input.cc",
+-    "firebolt/firebolt.cc",
+-    "firebolt/firebolt.h",
+     "get_home_directory.cc",
+     "hang_detector.cc",
+     "hang_detector.h",
+     "libcobalt.cc",
+     "libcobalt.h",
+-    "linux_key_mapping.cc",
+     "linux_key_mapping.h",
+     "main_rdk.cc",
+     "media/gst_media_utils.cc",
+@@ -389,8 +363,6 @@ static_library("starboard_platform") {
+     "media/media_is_supported.cc",
+     "media/media_is_transfer_characteristics_supported.cc",
+     "media/media_is_video_supported.cc",
+-    "platform_service.cc",
+-    "platform_service.h",
+     "player/player_create.cc",
+     "player/player_destroy.cc",
+     "player/player_get_current_frame.cc",
+@@ -405,7 +377,7 @@ static_library("starboard_platform") {
+     "player/player_set_volume.cc",
+     "player/player_write_end_of_stream.cc",
+     "player/player_write_sample.cc",
+-    "rdkservices.cc",
++    "rdkservices_dummy.cc",
+     "speech/accessibility_get_text_to_speech_settings.cc",
+     "speech/speech_synthesis_cancel.cc",
+     "speech/speech_synthesis_is_supported.cc",
+@@ -460,20 +432,9 @@ static_library("starboard_platform") {
+   configs += [
+     "//starboard/build/config:starboard_implementation",
+     ":glib",
+-    ":gstreamer",
+-    ":wpeframework",
++    ":gstreamer"
+   ]
+ 
+-  if (rdk_enable_cryptography) {
+-    configs += [
+-      ":cryptography",
+-    ]
+-  }
+-
+-  if (rdk_enable_securityagent) {
+-    configs += [ ":securityagent" ]
+-  }
+-
+   if (rdk_enable_ocdm) {
+     configs += [ ":ocdmRialto" ]
+   }
+Index: starboard/src/third_party/starboard/rdk/shared/firebolt/firebolt.h
+===================================================================
+--- starboard.orig/src/third_party/starboard/rdk/shared/firebolt/firebolt.h
++++ starboard/src/third_party/starboard/rdk/shared/firebolt/firebolt.h
+@@ -32,7 +32,7 @@ struct Entitlement {
+ };
+ 
+ struct Discovery {
+-    bool entitlements(const std::vector<Entitlement>&);
++    bool entitlements(const std::vector<Entitlement>&) { return false; }
+ };
+ 
+ }  // namespace firebolt
+Index: starboard/src/third_party/starboard/rdk/shared/platform_service.h
+===================================================================
+--- starboard.orig/src/third_party/starboard/rdk/shared/platform_service.h
++++ starboard/src/third_party/starboard/rdk/shared/platform_service.h
+@@ -36,7 +36,7 @@ namespace starboard {
+ namespace rdk {
+ namespace shared {
+ 
+-const void* GetPlatformServiceApi();
++const void* GetPlatformServiceApi() { return NULL; }
+ 
+ }  // namespace shared
+ }  // namespace rdk
+Index: starboard/src/third_party/starboard/rdk/shared/rdkservices_dummy.cc
+===================================================================
+--- /dev/null
++++ starboard/src/third_party/starboard/rdk/shared/rdkservices_dummy.cc
+@@ -0,0 +1,14 @@
++namespace third_party {
++namespace starboard {
++namespace rdk {
++namespace shared {
++
++void TeardownJSONRPCLink() {
++
++}
++
++}  // namespace shared
++}  // namespace rdk
++}  // namespace starboard
++}  // namespace third_party
++

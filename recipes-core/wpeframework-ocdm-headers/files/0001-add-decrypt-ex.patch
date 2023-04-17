@@ -1,0 +1,56 @@
+decrypt_ex() Part of 0001-RDK-31882-Add-GstCaps-parsing-in-OCDM-to-wpeframework-clientlibraries.patch
+
+From 49dfcb724a8ca7ab69ba27ef7e43430d9f766335 Mon Sep 17 00:00:00 2001
+From: Douglas Adler <douglas_adler2@comcast.com>
+Date: Mon, 8 Mar 2021 16:14:38 +0000
+Subject: [PATCH] RDK-31882 : Add GstCaps parsing in OCDM to
+ wpeframework-clientlibraries
+Source: COMCAST
+
+diff --git a/Source/ocdm/adapter/open_cdm_adapter.h b/Source/ocdm/adapter/open_cdm_adapter.h
+index 02c06af..d9ff7cb 100644
+index 02c06af..bd8a36b 100644
+--- a/Source/ocdm/adapter/open_cdm_adapter.h
++++ b/Source/ocdm/adapter/open_cdm_adapter.h
+@@ -24,6 +24,8 @@
+ 
+ struct _GstBuffer;
+ typedef struct _GstBuffer GstBuffer;
++struct _GstCaps;
++typedef struct _GstCaps GstCaps;
+ 
+ #ifdef __cplusplus
+ extern "C" {
+@@ -41,9 +43,31 @@ extern "C" {
+  * \param subSampleCount count of subsamples
+  * \param IV Gstreamer buffer containing initial vector (IV) used during decryption.
+  * \param keyID Gstreamer buffer containing keyID to use for decryption
++ * \param initWithLast15 Init flag
++ * \param caps GstCaps structure
+  * \return Zero on success, non-zero on error.
+  */
+-    EXTERNAL OpenCDMError opencdm_gstreamer_session_decrypt(struct OpenCDMSession* session, GstBuffer* buffer, GstBuffer* subSample, const uint32_t subSampleCount,
++   EXTERNAL OpenCDMError opencdm_gstreamer_session_decrypt_ex(struct OpenCDMSession* session, GstBuffer* buffer, GstBuffer* subSample, const uint32_t subSampleCount,
++                                                   GstBuffer* IV, GstBuffer* keyID, uint32_t initWithLast15, GstCaps* caps = NULL);
++
++
++/**
++ * \brief Performs decryption based on adapter implementation.
++ *
++ * This method accepts encrypted data and will typically decrypt it out-of-process (for security reasons). The actual data copying is performed
++ * using a memory-mapped file (for performance reasons). If the DRM system allows access to decrypted data (i.e. decrypting is not
++ * performed in a TEE), the decryption is performed in-place.
++ * \param session \ref OpenCDMSession instance.
++ * \param buffer Gstreamer buffer containing encrypted data and related meta data. If applicable, decrypted data will be stored here after this call returns.
++ * \param subSample Gstreamer buffer containing subsamples size which has been parsed from protection meta data.
++ * \param subSampleCount count of subsamples
++ * \param IV Gstreamer buffer containing initial vector (IV) used during decryption.
++ * \param keyID Gstreamer buffer containing keyID to use for decryption
++ * \param initWithLast15 Init flag
++ * \return Zero on success, non-zero on error.
++ */
++/** This provides implementation to support the older API. */
++   EXTERNAL OpenCDMError opencdm_gstreamer_session_decrypt(struct OpenCDMSession* session, GstBuffer* buffer, GstBuffer* subSample, const uint32_t subSampleCount,
+                                                    GstBuffer* IV, GstBuffer* keyID, uint32_t initWithLast15);
+ 
+ #ifdef __cplusplus

@@ -1,0 +1,13 @@
+Source: Liberty Global Service B.V.
+Index: git/Source/cryptography/CMakeLists.txt
+===================================================================
+--- git.orig/Source/cryptography/CMakeLists.txt
++++ git/Source/cryptography/CMakeLists.txt
+@@ -50,6 +50,7 @@ target_include_directories(${TARGET}
+ 
+ set(PUBLIC_HEADERS
+     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ICryptography.h>
++    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Module.h>
+     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/INetflixSecurity.h>
+     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cryptography.h>
+     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/implementation/cryptography_vault_ids.h>

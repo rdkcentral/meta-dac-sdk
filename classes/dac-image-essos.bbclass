@@ -9,4 +9,4 @@ cleanup_hw_dependent_libs () {
     rm -rf ${IMAGE_ROOTFS}/usr/lib/libessos*
 }
 
-ROOTFS_POSTPROCESS_COMMAND += 'cleanup_hw_dependent_libs;'
+ROOTFS_POSTPROCESS_COMMAND += "${@bb.utils.contains('DISTRO_FEATURES', 'cleanup_gfx', 'cleanup_hw_dependent_libs;', '', d)}"

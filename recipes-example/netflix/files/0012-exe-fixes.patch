@@ -1,0 +1,45 @@
+Source: Liberty Global Service B.V.
+Index: git/partner/dpi/gstreamer/SOCUtilities.cpp
+===================================================================
+--- git.orig/partner/dpi/gstreamer/SOCUtilities.cpp
++++ git/partner/dpi/gstreamer/SOCUtilities.cpp
+@@ -116,8 +116,9 @@ bool SOCUtilities::AddSVPMetadataToAVPac
+ 
+ std::string SOCUtilities::GetSocIDFromSDK()
+ {
+-    std::string strSOCID = ::device::Host::getInstance().getSocIDFromSDK();
+-    return strSOCID;
++    //std::string strSOCID = ::device::Host::getInstance().getSocIDFromSDK();
++syslog(LOG_INFO,"%s: %d HIER1 GetSocIDFromSDK", __FUNCTION__, __LINE__);
++    return "123";
+ }
+ 
+ bool SOCUtilities::isAudioEquivalenceEnabled()
+Index: git/partner/dpi/gstreamer/ocdm/OCDMDecrypter.cpp
+===================================================================
+--- git.orig/partner/dpi/gstreamer/ocdm/OCDMDecrypter.cpp
++++ git/partner/dpi/gstreamer/ocdm/OCDMDecrypter.cpp
+@@ -317,7 +317,7 @@ NFErr  Decrypter::decryptAesCtr(const st
+ 	    GstCaps * caps = gst_caps_from_string(caps_string);
+ 	    g_free(caps_string);
+ 
+-	    ocdm_err = opencdm_gstreamer_session_decrypt_ex(mOpenCDMSession, gstBuffer, subSample, subSampleCount,
++	    ocdm_err = DrmSystem::g_ocdmGstSessionDecryptEx(mOpenCDMSession, gstBuffer, subSample, subSampleCount,
+ 			    pIV, keyBuffer, initWithLast15, caps);
+ 	    gst_caps_unref(caps);
+     }
+Index: git/partner/dpi/gstreamer/SOCUtilities.h
+===================================================================
+--- git.orig/partner/dpi/gstreamer/SOCUtilities.h
++++ git/partner/dpi/gstreamer/SOCUtilities.h
+@@ -5,10 +5,6 @@
+ #include <gst/gst.h>
+ #include <string>
+ 
+-#include "host.hpp"
+-#include "exception.hpp"
+-#include "videoOutputPort.hpp"
+-#include "audioOutputPort.hpp"
+ #include "Module.h"
+ 
+ #include "ThunderLink.h"

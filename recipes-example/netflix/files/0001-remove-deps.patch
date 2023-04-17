@@ -1,0 +1,95 @@
+Source: Liberty Global Service B.V.
+Index: git/Source/WPEFramework/CMakeLists.txt
+===================================================================
+--- git.orig/Source/WPEFramework/CMakeLists.txt
++++ git/Source/WPEFramework/CMakeLists.txt
+@@ -15,8 +15,6 @@
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
+ 
+-find_package(RFC)
+-
+ get_filename_component(TARGET ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+ 
+ set(THREADPOOL_COUNT 4 CACHE STRING "The number of threads in the thread pool")
+@@ -51,8 +49,6 @@ if(EXCEPTION_CATCHING)
+     set_source_files_properties( PluginServer.cpp PROPERTIES COMPILE_FLAGS "-fexceptions" )
+ endif()
+ 
+-target_include_directories(${TARGET} PRIVATE ${RFC_INCLUDE_DIRS})
+-
+ target_link_libraries(${TARGET}
+         PRIVATE
+           CompileSettingsDebug::CompileSettingsDebug
+@@ -63,7 +59,6 @@ target_link_libraries(${TARGET}
+           ${NAMESPACE}Cryptalgo::${NAMESPACE}Cryptalgo
+           ${NAMESPACE}Plugins::${NAMESPACE}Plugins
+           ${NAMESPACE}COMProcess::${NAMESPACE}COMProcess  # For COM executable define
+-          ${RFC_LIBRARIES}
+         )
+         
+ if(PROCESSCONTAINERS)
+Index: git/Source/WPEProcess/CMakeLists.txt
+===================================================================
+--- git.orig/Source/WPEProcess/CMakeLists.txt
++++ git/Source/WPEProcess/CMakeLists.txt
+@@ -17,8 +17,6 @@
+ 
+ get_filename_component(TARGET ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+ 
+-find_package(Breakpad QUIET)
+-
+ if(EXCEPTION_CATCHING)
+     set_source_files_properties( Process.cpp PROPERTIES COMPILE_FLAGS "-fexceptions" )
+ endif()
+@@ -65,12 +63,6 @@ else()
+             )
+ endif ()
+ 
+-if(BREAKPAD_FOUND)
+-    add_definitions(-DUSE_BREAKPAD=1 -D__STDC_FORMAT_MACROS)
+-    target_link_libraries(${TARGET} PUBLIC ${BREAKPAD_LIBRARIES} pthread)
+-    target_include_directories(${TARGET} PUBLIC ${BREAKPAD_INCLUDE_DIRS})
+-endif(BREAKPAD_FOUND)
+-
+ set_target_properties(${TARGET} PROPERTIES
+         CXX_STANDARD 11
+         CXX_STANDARD_REQUIRED YES
+Index: git/Source/WPEFramework/PluginServer.h
+===================================================================
+--- git.orig/Source/WPEFramework/PluginServer.h
++++ git/Source/WPEFramework/PluginServer.h
+@@ -34,8 +34,6 @@
+ #error "Please define the name of the COM process!!!"
+ #endif
+ 
+-#include "rfcapi.h"
+-
+ #define MAX_EXTERNAL_WAITS 2000 /* Wait for 2 Seconds */
+ 
+ namespace WPEFramework {
+@@ -1624,23 +1622,7 @@ namespace PluginHost {
+             inline bool getRFC(const string& name, bool& response)
+             {
+                 bool retVal = false;
+-    
+-                RFC_ParamData_t param = {};
+-                
+-                WDMP_STATUS status = getRFCParameter(const_cast<char*>("WPEFramework"), name.c_str(), &param);
+-                SYSLOG(Logging::Startup, (_T("name = %s, type = %d, value = %s"), param.name, param.type, param.value));
+-
+-                if (status == WDMP_SUCCESS)
+-                {        
+-                    response = (strncmp(param.value, "true", strlen("true")) == 0);
+-                    retVal = true;
+-                }
+-                else
+-                {
+-                    SYSLOG(Logging::Startup, (_T("getRFCParameter fail : %s"), getRFCErrorString(status)));
+-                }
+-    
+-                
++                SYSLOG(Logging::Startup, (_T("getRFCParameter REMOVED")));
+                 return retVal;
+             }
+ 

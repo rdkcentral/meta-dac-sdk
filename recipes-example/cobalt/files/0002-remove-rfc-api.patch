@@ -1,0 +1,55 @@
+Source: Liberty Global Service B.V.
+Index: starboard/src/third_party/starboard/rdk/shared/BUILD.gn
+===================================================================
+--- starboard.orig/src/third_party/starboard/rdk/shared/BUILD.gn
++++ starboard/src/third_party/starboard/rdk/shared/BUILD.gn
+@@ -468,12 +468,6 @@ static_library("starboard_platform") {
+     configs += [
+       ":cryptography",
+     ]
+-    libs += [
+-      "rfcapi",
+-    ]
+-    cflags += [
+-      "-I=/usr/include/wdmp-c",
+-    ]
+   }
+ 
+   if (rdk_enable_securityagent) {
+Index: starboard/src/third_party/starboard/rdk/shared/system/system_sign_with_certification_secret_key.cc
+===================================================================
+--- starboard.orig/src/third_party/starboard/rdk/shared/system/system_sign_with_certification_secret_key.cc
++++ starboard/src/third_party/starboard/rdk/shared/system/system_sign_with_certification_secret_key.cc
+@@ -41,7 +41,6 @@
+ 
+ #if defined(HAS_CRYPTOGRAPHY)
+ #include <cryptography/cryptography.h>
+-#include <rfcapi.h>
+ #endif
+ 
+ namespace {
+@@ -66,7 +65,6 @@ bool SbSystemSignWithCertificationSecret
+   using namespace WPEFramework::Cryptography;
+ 
+   const char kDefaultKeyName[] = "0381000003810001.key";
+-  const char kRFCParamName[] = "Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.Cobalt.AuthCertKeyName";
+ 
+   third_party::starboard::rdk::shared::HangMonitor hang_monitor(__func__);
+ 
+@@ -75,16 +73,6 @@ bool SbSystemSignWithCertificationSecret
+   if ( env != nullptr ) {
+     key_name = env;
+     SB_LOG(INFO) << "Using ENV set key name: '" << key_name << "'";
+-  } else {
+-    char *callerId = SbStringDuplicate("Cobalt");
+-    RFC_ParamData_t param;
+-    memset(&param, 0, sizeof (param));
+-    WDMP_STATUS status = getRFCParameter(callerId, kRFCParamName, &param);
+-    if ( status == WDMP_SUCCESS && param.type == WDMP_STRING ) {
+-      key_name = param.value;
+-      SB_LOG(INFO) << "Using RFC provided key name: '" << key_name << "'";
+-    }
+-    SbMemoryDeallocate(callerId);
+   }
+ 
+   if ( key_name.empty() ) {
