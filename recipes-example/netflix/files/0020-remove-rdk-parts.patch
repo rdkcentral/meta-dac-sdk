@@ -26,14 +26,14 @@ Index: git/partner/dpi/gstreamer/FileSystem.h
  //Thunder Event handler
  static void thunderEventCallback(netflix::device::thunderlink::Event eventtype);
 -#endif
+ std::string base64_decode(const std::string &in);
+ void cec_callback(bool status);
  
- #ifdef SUPPORT_NATIVEFRAMERATE
- bool getNfrStatus();
 Index: git/partner/dpi/gstreamer/FileSystem.cpp
 ===================================================================
 --- git.orig/partner/dpi/gstreamer/FileSystem.cpp
 +++ git/partner/dpi/gstreamer/FileSystem.cpp
-@@ -257,18 +257,9 @@ FileSystem::FileSystem(std::string *erro
+@@ -261,18 +261,9 @@ FileSystem::FileSystem(std::string *erro
      /*TODO: RDKservices event handling seems to have a bug whereby Api invocations fail after an event is received. Resorting to
       IARM based event handling till this is resolved. DELIA-43952 */
  
@@ -50,9 +50,9 @@ Index: git/partner/dpi/gstreamer/FileSystem.cpp
  	ThunderLink::getinstance()->registerCallback(thunderEventCallback) == WPEFramework::Core::ERROR_NONE ? "Enabled" : "Failed");
 -#endif
  
+      ThunderLink::getinstance()->cec_registerCallback(cec_callback);
      suspendOnStart_ = suspendModeOnStart();
-     setSupportedVideoOutputs(true);
-@@ -276,148 +267,6 @@ FileSystem::FileSystem(std::string *erro
+@@ -284,45 +275,6 @@ FileSystem::FileSystem(std::string *erro
  
  }
  
@@ -68,7 +68,7 @@ Index: git/partner/dpi/gstreamer/FileSystem.cpp
 -    case IARM_BUS_DSMGR_EVENT_RES_POSTCHANGE:
 -      {
 -#ifdef SUPPORT_NATIVEFRAMERATE
--        if (!sConfiguration->supportFollowVideoSourceFrameRate)
+-        if (sConfiguration->supportFollowVideoSourceFrameRate != ISystem::FOLLOW_VIDEO_SOURCE_FRAME_RATE_ENABLED)
 -#endif
 -        {
 -          int dw = 1280;
@@ -95,6 +95,13 @@ Index: git/partner/dpi/gstreamer/FileSystem.cpp
 -  }
 -}
 -
+ void cec_callback(bool status)
+ {
+         syslog(LOG_WARNING,"%s %s: %d - Received Callback",  __FILE__, __FUNCTION__, __LINE__);
+@@ -349,118 +301,6 @@ void FileSystem::UpdateCecStatus()
+   }
+ }
+ 
 -void AudioModeHandler(const char *owner, IARM_EventId_t eventId, void *data, size_t len)
 -{
 -  printf("%s enter Event id is %d\n", __FUNCTION__, eventId);
@@ -128,6 +135,15 @@ Index: git/partner/dpi/gstreamer/FileSystem.cpp
 -      standbyWakeup=true;
 -      time(&gwakeuptime);
 -    }
+-    else if ((param->data.state.curState == IARM_BUS_PWRMGR_POWERSTATE_ON) && ((param->data.state.newState == IARM_BUS_PWRMGR_POWERSTATE_STANDBY) || (param->data.state.newState == IARM_BUS_PWRMGR_POWERSTATE_STANDBY_LIGHT_SLEEP)))
+-    {
+-      isActive = false;
+-      if(nrdApp() && nrdApp()->getDeviceLib() && nrdApp()->getSystem())
+-      {
+-          FileSystem* fs = static_cast<FileSystem*>(nrdApp()->getSystem().get());
+-          if(fs) fs->UpdateCecStatus();
+-      }
+-    }
 -
 -  }
 -}
@@ -157,7 +173,7 @@ Index: git/partner/dpi/gstreamer/FileSystem.cpp
 -          if (fileSystem)
 -          {
 -            fileSystem->mSystemMonitor->clearDynamicFrameRateMap();
--            fileSystem->mSystemMonitor->createDynamicFrameRateMap();
+-            fileSystem->createDynamicFrameRateMap();
 -          }
 -        }
 -#endif
@@ -175,7 +191,7 @@ Index: git/partner/dpi/gstreamer/FileSystem.cpp
 -    case IARM_BUS_DSMGR_EVENT_HDCP_STATUS :
 -      {
 -#ifdef SUPPORT_NATIVEFRAMERATE
--        if (!sConfiguration->supportFollowVideoSourceFrameRate)
+-        if (sConfiguration->supportFollowVideoSourceFrameRate != ISystem::FOLLOW_VIDEO_SOURCE_FRAME_RATE_ENABLED)
 -#endif
 -        {
 -          IARM_Bus_DSMgr_EventData_t *eventData = (IARM_Bus_DSMgr_EventData_t *)data;
@@ -201,7 +217,7 @@ Index: git/partner/dpi/gstreamer/FileSystem.cpp
  static void thunderEventCallback(thunderlink::Event event)
  {
    FileSystem* fs;
-@@ -452,7 +301,6 @@ static void thunderEventCallback(thunder
+@@ -495,7 +335,6 @@ static void thunderEventCallback(thunder
        syslog(LOG_ERR, "%s: %d Received Unknown Thunder event\n", __FUNCTION__, __LINE__);
    }
  }
@@ -209,7 +225,7 @@ Index: git/partner/dpi/gstreamer/FileSystem.cpp
  
  FileSystem::~FileSystem()
  {
-@@ -665,7 +513,7 @@ static bool x_AddHDProfile(std::vector<C
+@@ -743,7 +582,7 @@ static bool x_AddHDProfile(std::vector<C
    return retVal;
  }
  
@@ -218,7 +234,7 @@ Index: git/partner/dpi/gstreamer/FileSystem.cpp
  {
    bool retVal = false;
    if(bHDR10) {
-@@ -819,7 +667,7 @@ void FileSystem::setSupportedVideoOutput
+@@ -897,7 +736,7 @@ void FileSystem::setSupportedVideoOutput
    uint32_t heightCM         = 0;
    uint32_t widthCM          = 0;
  
@@ -227,7 +243,135 @@ Index: git/partner/dpi/gstreamer/FileSystem.cpp
    PlaybackResolution _Resolution;
    HdcpParams params;
  
-@@ -1147,15 +995,6 @@ void FileSystem::init(std::shared_ptr<IS
+@@ -1047,127 +886,6 @@ else {
+         syslog(LOG_INFO,"%s: %d : isActive:%d", __FUNCTION__, __LINE__, isActive);
+       }
+       videoOutputState.cecState = isActive ? CEC_ACTIVE : CEC_INACTIVE;
+-#if defined(USE_DISPLAY_SETTINGS) || !defined(ENABLE_THUNDER_EVENTS)
+-      try {
+-            int dsFrameRate = 0;
+-            int tValue = 0;
+-            int tColorDepth = 0;
+-            ::device::VideoOutputPort vPort = ::device::Host::getInstance().getVideoOutputPort("HDMI0");
+-
+-            dsFrameRate = vPort.getResolution().getFrameRate().getId();
+-            switch (dsFrameRate)
+-            {
+-              case dsVIDEO_FRAMERATE_24:         /**< Played at 24 frames per second.           */
+-                videoOutputState.frameRate = FrameRate::FRAMERATE_24;
+-                break;
+-              case dsVIDEO_FRAMERATE_25:         /**< Played at 25 frames per second.           */
+-                videoOutputState.frameRate = FrameRate::FRAMERATE_25;
+-                break;
+-              case dsVIDEO_FRAMERATE_30:         /**< Played at 30 frames per second.           */
+-                videoOutputState.frameRate = FrameRate::FRAMERATE_30;
+-                break;
+-              case dsVIDEO_FRAMERATE_60:         /**< Played at 60 frames per second.           */
+-                videoOutputState.frameRate = FrameRate::FRAMERATE_60;
+-                break;
+-              case dsVIDEO_FRAMERATE_23dot98:    /**< Played at 23.98 frames per second.        */
+-                videoOutputState.frameRate = FrameRate::FRAMERATE_23_976;
+-                break;
+-              case dsVIDEO_FRAMERATE_29dot97:    /**< Played at 29.97 frames per second.        */
+-                videoOutputState.frameRate = FrameRate::FRAMERATE_29_97;
+-                break;
+-              case dsVIDEO_FRAMERATE_50:         /**< Played at 50 frames per second.           */
+-                videoOutputState.frameRate = FrameRate::FRAMERATE_50;
+-                break;
+-              case dsVIDEO_FRAMERATE_59dot94:    /**< Played at 59.94 frames per second.        */
+-                videoOutputState.frameRate = FrameRate::FRAMERATE_59_94;
+-                break;
+-              case dsVIDEO_FRAMERATE_UNKNOWN:    /**< Unknown frame rate.                       */
+-              default:
+-                videoOutputState.frameRate = FrameRate::FRAMERATE_UNKNOWN;
+-                break;
+-            }
+-
+-            //Format
+-            tValue = vPort.getColorSpace();
+-            //Log::warn(TRACE_DPI, "[%s:%d] vPort.getColorSpace() retuned %d",__FILE__, __LINE__, tValue);
+-            if (tValue == dsDISPLAY_COLORSPACE_YCbCr420)
+-                videoOutputState.format = Format::FORMAT_YCBCR_420;
+-            else if (tValue == dsDISPLAY_COLORSPACE_YCbCr422)
+-                videoOutputState.format = Format::FORMAT_YCBCR_422;
+-            else if (tValue == dsDISPLAY_COLORSPACE_YCbCr444)
+-                videoOutputState.format = Format::FORMAT_YCBCR_444;
+-            else if (tValue == dsDISPLAY_COLORSPACE_RGB)
+-                videoOutputState.format = Format::FORMAT_RGB_444;
+-            else if (tValue == dsDISPLAY_COLORSPACE_AUTO)
+-                videoOutputState.format = Format::FORMAT_OTHER;
+-            else
+-                videoOutputState.format = Format::FORMAT_UNKNOWN;
+-
+-            tColorDepth = vPort.getColorDepth();
+-            //Log::warn(TRACE_DPI, "[%s:%d] vPort.getColorDepth() retuned %d",__FILE__, __LINE__, tColorDepth);
+-            if (videoOutputState.format == Format::FORMAT_YCBCR_422)
+-            {
+-                videoOutputState.colorDepth = ColorDepth::COLORDEPTH_12_BIT;
+-                //Log::warn(TRACE_DPI, "[%s:%d] set videoOutputState.colorDepth = 12",__FILE__, __LINE__);
+-            }
+-            else
+-            {
+-                videoOutputState.colorDepth = static_cast<ColorDepth>(tColorDepth);
+-            }
+-
+-
+-            //matrixCoefficients
+-            tValue = vPort.getMatrixCoefficients();
+-            //Log::warn(TRACE_DPI, "[%s:%d] vPort.getMatrixCoefficients() retuned %d",__FILE__, __LINE__, tValue);
+-
+-            if (tValue == dsDISPLAY_MATRIXCOEFFICIENT_SMPTE_170M)
+-                videoOutputState.colorimetry = Colorimetry::COLORIMETRY_SMPTE170M;
+-            else if (tValue == dsDISPLAY_MATRIXCOEFFICIENT_BT_709)
+-                videoOutputState.colorimetry = Colorimetry::COLORIMETRY_BT709;
+-            else if (tValue == dsDISPLAY_MATRIXCOEFFICIENT_eXvYCC_601)
+-                videoOutputState.colorimetry = Colorimetry::COLORIMETRY_XVYCC601;
+-            else if (tValue == dsDISPLAY_MATRIXCOEFFICIENT_XvYCC_709)
+-                videoOutputState.colorimetry = Colorimetry::COLORIMETRY_XVYCC709;
+-            else if (tValue == dsDISPLAY_MATRIXCOEFFICIENT_BT_2020_NCL)
+-                videoOutputState.colorimetry = Colorimetry::COLORIMETRY_BT2020RGB_YCBCR;
+-            else if (tValue == dsDISPLAY_MATRIXCOEFFICIENT_BT_2020_CL)
+-                videoOutputState.colorimetry = Colorimetry::COLORIMETRY_BT2020YCCBCBRC;
+-            else if (tValue != dsDISPLAY_MATRIXCOEFFICIENT_UNKNOWN)
+-                videoOutputState.colorimetry = Colorimetry::COLORIMETRY_OTHER;
+-            else
+-                videoOutputState.colorimetry = Colorimetry::COLORIMETRY_UNKNOWN;
+-
+-            // videoEOTF
+-            tValue = vPort.getVideoEOTF();
+-            //Log::warn(TRACE_DPI, "[%s:%d] vPort.getVideoEOTF() retuned %d",__FILE__, __LINE__, tValue);
+-
+-
+-            if (tValue == dsHDRSTANDARD_NONE)
+-                videoOutputState.eotf = Eotf::EOTF_BT1886;
+-            else if ((tValue == dsHDRSTANDARD_HLG) || (tValue == (dsHDRSTANDARD_HLG|dsHDRSTANDARD_HDR10)))
+-                videoOutputState.eotf = Eotf::EOTF_BT2100;
+-            else if (tValue == dsHDRSTANDARD_HDR10)
+-                videoOutputState.eotf = Eotf::EOTF_SMPTE_ST_2084;
+-            else if (tValue == dsHDRSTANDARD_DolbyVision)
+-                videoOutputState.eotf = Eotf::EOTF_OTHER;
+-
+-
+-            //quantizationRange
+-            tValue = vPort.getQuantizationRange();
+-            //Log::warn(TRACE_DPI, "[%s:%d] vPort.getQuantizationRange() retuned %d",__FILE__, __LINE__, tValue);
+-
+-            if (tValue == dsDISPLAY_QUANTIZATIONRANGE_UNKNOWN)
+-                videoOutputState.quantizationRange = QuantizationRange::QUANTIZATIONRANGE_UNKNOWN;
+-            else if (tValue == dsDISPLAY_QUANTIZATIONRANGE_LIMITED)
+-                videoOutputState.quantizationRange = QuantizationRange::QUANTIZATIONRANGE_LIMITED;
+-            else if (tValue == dsDISPLAY_QUANTIZATIONRANGE_FULL)
+-                videoOutputState.quantizationRange = QuantizationRange::QUANTIZATIONRANGE_FULL;
+-
+-            Log::warn(TRACE_DPI, "[%s:%d] vPort FrameRate %d, QuantizationRange %d, Colorimetry %d, EOTF %d, Format %d, ColorDepth %d(%d)",__FILE__, __LINE__, (int)videoOutputState.frameRate, (int)videoOutputState.quantizationRange, (int)videoOutputState.colorimetry, (int)videoOutputState.eotf, (int)videoOutputState.format, (int)videoOutputState.colorDepth, tColorDepth);
+-      }catch (const std::exception e) {
+-            syslog(LOG_NOTICE,"exception from devicesettings vPort fail....%s\n", e.what());
+-      }
+-#endif
+       mActiveVideoOutputOverride.push_back(videoOutputState);
+       mSystemMonitor->setActiveVideoOutput(mActiveVideoOutputOverride);
+     }
+@@ -1392,15 +1110,6 @@ void FileSystem::init(std::shared_ptr<IS
  
  void FileSystem::shutdown()
  {
@@ -243,7 +387,7 @@ Index: git/partner/dpi/gstreamer/FileSystem.cpp
      mCommonSystem->shutdown();
      mEventDispatcher.reset();
  }
-@@ -2015,61 +1854,6 @@ void FileSystem::setNFRCapability(bool n
+@@ -2381,61 +2090,6 @@ void FileSystem::createDynamicFrameRateM
  std::list<FrameRate> FileSystem::getFramerates()
  {
    std::list<FrameRate> frameRateList;
@@ -333,7 +477,7 @@ Index: git/partner/dpi/gstreamer/CMakeLists.txt
 ===================================================================
 --- git.orig/partner/dpi/gstreamer/CMakeLists.txt
 +++ git/partner/dpi/gstreamer/CMakeLists.txt
-@@ -133,7 +133,6 @@ if("${RDK_SVP}" STREQUAL "ENABLED")
+@@ -153,7 +153,6 @@ if("${RDK_SVP}" STREQUAL "ENABLED")
  endif()
  
  include_directories($ENV{STAGING_DIR}/usr/include/WPEFramework)
@@ -345,7 +489,7 @@ Index: git/partner/dpi/gstreamer/DeviceLibNative.cpp
 ===================================================================
 --- git.orig/partner/dpi/gstreamer/DeviceLibNative.cpp
 +++ git/partner/dpi/gstreamer/DeviceLibNative.cpp
-@@ -617,7 +617,7 @@ static void x_SetAdditionalConfiguration
+@@ -649,7 +649,7 @@ static void x_SetAdditionalConfiguration
        pConfig->hevcEnabled     = true;
  
        // Does the device (not the TV) support HDR
@@ -354,3 +498,25 @@ Index: git/partner/dpi/gstreamer/DeviceLibNative.cpp
        if(WPEFramework::Core::ERROR_NONE == ThunderLink::getinstance()->getSettopHDRSupport(hdr))
        {
          for(auto it = hdr.begin(); it != hdr.end(); it++)
+Index: git/partner/dpi/gstreamer/ThunderLink.cpp
+===================================================================
+--- git.orig/partner/dpi/gstreamer/ThunderLink.cpp
++++ git/partner/dpi/gstreamer/ThunderLink.cpp
+@@ -731,7 +731,7 @@ namespace thunderlink {
+         //std::string externalNetworkFile = Configuration::dataWritePath() + "/network/external_network.json";
+         std::string externalNetworkFile = "/opt/netflix/network/external_network.json";
+ 
+-        int fd = open(externalNetworkFile.c_str(), O_CREAT | O_WRONLY | O_CLOEXEC);
++        int fd = open(externalNetworkFile.c_str(), O_CREAT | O_WRONLY | O_CLOEXEC, 0666);
+         if(fd < 0)
+         {
+             syslog(LOG_WARNING, "[%s:%d] Cannot open %s; error %s",__FILENAME__, __LINE__, externalNetworkFile.c_str(), strerror(errno));
+@@ -776,7 +776,7 @@ namespace thunderlink {
+                 //std::string externalNetworkFile = Configuration::dataWritePath() + "/network/external_network.json";
+                 std::string externalNetworkFile = "/opt/netflix/network/external_network.json";
+ 
+-                int fd = open(externalNetworkFile.c_str(), O_CREAT | O_WRONLY | O_CLOEXEC);
++                int fd = open(externalNetworkFile.c_str(), O_CREAT | O_WRONLY | O_CLOEXEC, 0666);
+                 if(fd < 0)
+                 {
+                     syslog(LOG_WARNING, "[%s:%d] Cannot open %s; error %s",__FILENAME__, __LINE__, externalNetworkFile.c_str(), strerror(errno));

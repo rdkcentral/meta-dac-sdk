@@ -2,5 +2,5 @@
 PACKAGECONFIG_remove = "server"
 PACKAGECONFIG_remove = "servermanager"
 
-# 31 Jan 2023
-SRCREV = "b60940516eb9eda7ddd46060bd300c4fb5386b2b"
+# 4 Apr 2023
+SRCREV = "6a0e9c2416461f9b42a190fa1de0cedbd25d2974"

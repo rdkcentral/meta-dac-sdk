@@ -1,7 +1,9 @@
 SRC_URI_remove = "https://artifactory.rdkcentral.com/artifactory/rdk-netflix-sdk-local/nrd-5.3.1-27d5e9003f.tar.gz;name=netflix"
 SRC_URI += "file://nrd-5.3.1-27d5e9003f.tar.gz;name=netflix"
+SRCREV_netflix = "5deeb28505583606adb509360b32486dca940edb"
 
-DEPENDS += "rialto"
+DEPENDS += "rialto-ocdm"
+RDEPENDS_${PN} += "rialto-gstreamer"
 DEPENDS_remove = "iarmmgrs"
 DEPENDS_remove = "systemd"
 #DEPENDS_remove = "wpeframework"
