@@ -1,6 +1,6 @@
 # disable server parts
 PACKAGECONFIG_remove = "server"
-PACKAGECONFIG_remove = "servermanager"
+PACKAGECONFIG_remove = "servermanager-sim"
 
-# 4 Apr 2023
-SRCREV = "6a0e9c2416461f9b42a190fa1de0cedbd25d2974"
+# 30 May 2023
+SRCREV = "2396a57f68fdf2ed64a6907748ead95f7ded7e64"

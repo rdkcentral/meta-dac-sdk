@@ -3,8 +3,8 @@ Index: git/CMakeLists.txt
 ===================================================================
 --- git.orig/CMakeLists.txt
 +++ git/CMakeLists.txt
-@@ -29,7 +29,6 @@ set( CMAKE_CXX_STANDARD_REQUIRED ON )
- include( CheckCXXCompilerFlag )
+@@ -37,7 +37,6 @@ add_compile_options(
+ )
  
  find_package( Rialto REQUIRED )
 -find_package( ocdm REQUIRED )
