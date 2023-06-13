@@ -10,21 +10,21 @@ DEPENDS = "protobuf protobuf-native"
 S = "${WORKDIR}/git"
 inherit cmake coverity
 
-PACKAGES =+ "${PN}-client ${PN}-server ${PN}-servermanager-lib ${PN}-servermanager"
+PACKAGES =+ "${PN}-client ${PN}-server ${PN}-servermanager-lib ${PN}-servermanager-sim"
+PROVIDES += "${PN}-client ${PN}-server ${PN}-servermanager-lib ${PN}-servermanager-sim"
 
-PACKAGECONFIG[server] = "-DENABLE_SERVER=ON,-DENABLE_SERVER=OFF,wpeframework-clientlibraries gstreamer1.0 gstreamer1.0-plugins-base glib-2.0"
-PACKAGECONFIG[servermanager] = "-DENABLE_SERVER_MANAGER=ON,-DENABLE_SERVER_MANAGER=OFF,mongoose,"
+PACKAGECONFIG[server] = "-DENABLE_SERVER=ON,-DENABLE_SERVER=OFF,wpeframework-clientlibraries gstreamer1.0 gstreamer1.0-plugins-base glib-2.0 rdk-gstreamer-utils,"
+PACKAGECONFIG[servermanager-sim] = "-DENABLE_SERVER_MANAGER=ON,-DENABLE_SERVER_MANAGER=OFF,mongoose,"
 
-# The 'servermanager' package config has a runtime
-# dependency on the 'RialtoServer' executable and as such
-# requires the 'server' package config to be enabled as well.
-PACKAGECONFIG ??= "server servermanager"
+PACKAGECONFIG ??= "server servermanager-sim"
 
 FILES_${PN}-client += "${libdir}/libRialtoClient.so.*"
-
 FILES_${PN}-server += "${bindir}/RialtoServer"
-
-FILES_${PN}-servermanager += "${bindir}/RialtoServerManagerSim"
-RDEPENDS_${PN}-servermanager += "${PN}-server"
-
+RDEPENDS_${PN}-server += "rdk-gstreamer-utils"
+FILES_${PN}-servermanager-sim += "${bindir}/RialtoServerManagerSim"
 FILES_${PN}-servermanager-lib += "${libdir}/libRialtoServerManager.so.*"
+RDEPENDS_${PN}-servermanager-lib += "${PN}-server"
+
+# Enable the correct logging compile flag for the image build
+# Debug will include all logging, Release includes only fatal, error, warning and milestones
+EXTRA_OECMAKE += "${@bb.utils.contains("IMAGE_FEATURES", "prod", "-DRIALTO_BUILD_TYPE=Release", "-DRIALTO_BUILD_TYPE=Debug", d)}"
