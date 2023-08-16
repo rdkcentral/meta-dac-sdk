@@ -70,6 +70,25 @@ Build:
 >
 	bitbake dac-image-netflix
 
+# Building AmazonPrime5 DAC app
+
+AmazonPrime DAC app needs several things in order to build:
+* AmazonPrime5 source tarball
+* meta-rdk-amazon repo
+
+Extra setup steps:
+>
+        git clone "https://code.rdkcentral.com/r/apps/amazon/rdk-oe/meta-rdk-amazon"
+        mkdir -p build/downloads
+        cp ~/from_somewhere/avpk-v5.tgz build/downloads/avpk-v5.tgz
+        touch build/downloads/avpk-v5.tgz.done
+        echo 'BBLAYERS += " ${TOPDIR}/../meta-rdk-amazon"' >> build/conf/bblayers.conf
+        sed -i '/BBMASK.*amazon-prime-src_5.0.bb/d' meta-rdk-amazon/conf/layer.conf
+
+Build:
+>
+        bitbake dac-image-amazonprime5
+
 # Generating DAC bundles
 
 Optionally, you can enable DAC bundle generation for a specific target platform. It will use BundleGen, skopeo and umoci to do this.
