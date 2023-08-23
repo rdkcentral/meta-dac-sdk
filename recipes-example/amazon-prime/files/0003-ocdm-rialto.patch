@@ -48,28 +48,6 @@ Index: implementation/src/media-pipeline-backend/GStreamerPipeline.cpp
      GstBus *bus = gst_element_get_bus(cdata->pipeline);
      cdata->bus_watch_id = gst_bus_add_watch(bus, gst_bus_callback, (gpointer)(cdata));
      gst_object_unref(bus);
-@@ -861,9 +878,11 @@ GStreamerErrorCode gstreamer_mpb_seek(Cu
-     std::lock_guard<std::mutex> lock(cdata->mutex);
-     cdata->last_pos.store(position);
- 
--    MPB_LOG_INFO_N("Seek to pos=%" PRId64 ", a(mp=%" PRId64 ",configured=%d), v(mp=%" PRId64 ",configured=%d)",
-+    MPB_LOG_INFO_N("NO Seek to pos=%" PRId64 ", a(mp=%" PRId64 ",configured=%d), v(mp=%" PRId64 ",configured=%d)",
-             position, cdata->audio.max_pos.load(), cdata->audio.configured, cdata->video.max_pos.load(), cdata->video.configured);
- 
-+   // temp disable of seek because it introduces a deadlock (https://jira.rdkcentral.com/jira/browse/RIALTO-226)
-+/*
-     if(cdata->video.source) {
-         if(!gst_element_seek(
-                     cdata->video.source,
-@@ -891,7 +910,7 @@ GStreamerErrorCode gstreamer_mpb_seek(Cu
-             return kGSTSeekFailed;
-         }
-     }
--
-+*/
-     cdata->audio.feeding = true;
-     cdata->video.feeding = true;
-     return kGSTSuccess;
 Index: implementation/src/media-pipeline-backend/GStreamerMediaPipelineBackendImpl.cpp
 ===================================================================
 --- implementation.orig/src/media-pipeline-backend/GStreamerMediaPipelineBackendImpl.cpp
