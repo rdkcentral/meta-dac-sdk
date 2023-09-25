@@ -13,6 +13,9 @@ IMAGE_INSTALL_append = " glibc"
 IMAGE_INSTALL_append = " ldconfig"
 IMAGE_INSTALL_append = " dash"
 
+# fix for update_gio_module_cache and update_font_cache error on do_rootfs
+DEPENDS += "${@bb.utils.contains('BUNDLE_GENERATE', '1', 'qemuwrapper-cross', '', d)}"
+
 IMAGE_LINGUAS = " "
 LICENSE = "MIT"
 
