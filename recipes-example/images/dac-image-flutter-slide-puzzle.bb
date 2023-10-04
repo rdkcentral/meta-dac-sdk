@@ -2,8 +2,7 @@ SUMMARY = "slide_puzzle (flutter based application) in OCI Container"
 
 IMAGE_FSTYPES = "container oci"
 
-inherit image
-inherit image-oci
+inherit dac-image-base
 
 IMAGE_CONTAINER_NO_DUMMY = "1"
 
@@ -19,10 +18,9 @@ OCI_IMAGE_AUTHOR = "Damian Wrobel"
 OCI_IMAGE_AUTHOR_EMAIL = "dwrobel@ertelnet.rybnik.pl"
 
 # config:Entrypoint
-#OCI_IMAGE_ENTRYPOINT = ""
+OCI_IMAGE_ENTRYPOINT = "/usr/bin/flutter-launcher-wayland"
+OCI_IMAGE_ENTRYPOINT_ARGS = "/usr/share/flutter/apps/slide_puzzle/data/flutter_assets"
+APP_METADATA_PATH = "metadatas/flutter-slide-puzzle-appmetadata.json"
 
 # config:Env
 #OCI_IMAGE_ENV_VARS = '"PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin"'
-
-# config:Cmd
-#OCI_IMAGE_ENTRYPOINT_ARGS = "sh"
