@@ -7,7 +7,7 @@
 	mkdir build; cd build
 
 	# Install 'repo' tool from: https://android.googlesource.com/tools/repo
-	repo init -u https://github.com/stagingrdkm/meta-dac-sdk/ -m manifests/dac-dunfell-manifest.xml
+	repo init -u https://github.com/rdkcentral/meta-dac-sdk/ -m manifests/dac-dunfell-manifest.xml
 	repo sync -v -j$(getconf _NPROCESSORS_ONLN)
 
 	. ./oe-init-build-env
