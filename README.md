@@ -8,7 +8,7 @@
 
 	# Install 'repo' tool from: https://android.googlesource.com/tools/repo
 	repo init -u https://github.com/rdkcentral/meta-dac-sdk/ -m manifests/dac-dunfell-manifest.xml
-	repo sync -v -j$(getconf _NPROCESSORS_ONLN)
+	repo sync --no-clone-bundle -v -j$(getconf _NPROCESSORS_ONLN)
 
 	. ./oe-init-build-env
 	cp ../.repo/manifests/manifests/bblayers.conf conf/
