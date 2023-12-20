@@ -34,9 +34,10 @@
 	bitbake dac-image-flutter-slide-puzzle
 	bitbake dac-image-chocolate-doom
 	bitbake dac-image-cobalt
+	bitbake dac-image-glmark2
 
 	# Or build them all at once
-	bitbake dac-image-wayland-egl-test dac-image-wayland-egl-test-input dac-image-essos-sample dac-image-essos-egl dac-image-qt-test dac-image-shell dac-image-flutter-slide-puzzle
+	bitbake dac-image-wayland-egl-test dac-image-wayland-egl-test-input dac-image-essos-sample dac-image-essos-egl dac-image-qt-test dac-image-shell dac-image-flutter-slide-puzzle dac-image-glmark2
 
 # Building Cobalt DAC app
 
