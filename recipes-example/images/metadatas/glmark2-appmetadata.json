@@ -8,7 +8,14 @@
     "network": {
         "type": "open"
     },
-    "storage": {},
+    "storage": {
+        "temp": [
+            {
+                "size": "100M",
+                "path": "/tmp"
+            }
+        ]
+    },
     "resources": {
         "ram": "256M"
     },
