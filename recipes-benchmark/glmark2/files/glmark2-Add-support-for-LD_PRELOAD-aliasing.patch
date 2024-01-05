@@ -1,0 +1,49 @@
+From bf160f2994b595ad1e201566ca3be8ed7ba2880f Mon Sep 17 00:00:00 2001
+From: Damian Wrobel <dwrobel.contractor@libertyglobal.com>
+Date: Mon, 22 Aug 2022 14:32:53 +0200
+Subject: [PATCH] Add support for LD_PRELOAD/aliasing.
+
+On platforms where the LD_PRELOAD is used to overwrite functions
+it is needed to look first at the existing (preloaded/aliased) symbol
+instead of the real one from the shared library.
+
+For example on Broadcom Nexus platform the following libraries are preloaded:
+
+    - libwayland-egl.so.1
+    - libGLESv2.so
+
+where the libwayland-egl.so.1 overwrites eglGetDisplay() from the libGLESv2.so.
+
+In that situation it is inapropriate for libepoxy to select the eglGetDisplay()
+from the libGLESv2.so shared library.
+
+Signed-off-by: Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
+---
+ src/shared-library.cpp | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/src/shared-library.cpp b/src/shared-library.cpp
+index 8fd6292..8fb872b 100644
+--- a/src/shared-library.cpp
++++ b/src/shared-library.cpp
+@@ -81,6 +81,17 @@ void *SharedLibrary::load(const char *symbol) const
+ #if defined(WIN32)
+     return reinterpret_cast<void*>(GetProcAddress(reinterpret_cast<HMODULE>(handle_), symbol));
+ #else
++
++#ifdef _GNU_SOURCE
++    /*
++     * Check if the symbol is not already defined either by
++     * using aliasing or LD_PRELOAD.
++     */
++    void *result = dlsym(RTLD_DEFAULT, symbol);
++    if (result)
++        return result;
++#endif
++
+     return dlsym(handle_, symbol);
+ #endif
+ }
+-- 
+2.29.2
+
