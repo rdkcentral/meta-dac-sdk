@@ -1,0 +1,17 @@
+{
+    "id": "glmark2.glmark2",
+    "type": "application/vnd.rdk-app.dac.native",
+    "version": "20191226",
+    "description": "glmark2 benchmark",
+    "priority": "optional",
+    "graphics": true,
+    "network": {
+        "type": "open"
+    },
+    "storage": {},
+    "resources": {
+        "ram": "256M"
+    },
+    "features": [],
+    "mounts": []
+}

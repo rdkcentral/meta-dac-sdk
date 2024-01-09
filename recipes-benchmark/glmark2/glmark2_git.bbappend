@@ -1,0 +1,1 @@
+PACKAGECONFIG = "wayland-gles2"
