@@ -1,4 +1,6 @@
 #!/bin/sh
+# Copyright (c) 2023 dwrobel@ertelnet.rybnik.pl
+# Licensed under the MIT License
 
 # A scimple script for calculating an average of glmark2 score
 # Author: Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
