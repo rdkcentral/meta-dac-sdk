@@ -1,0 +1,26 @@
+{
+    "id": "com.rdk.flutterslidepuzzle",
+    "type": "application/vnd.rdk-app.dac.native",
+    "graphics": true,
+    "network": {
+        "type": "open",
+        "dnsmasq": "true"
+    },
+    "storage": {
+        "temp": [
+            {
+                "size": "100M",
+                "path": "/home/temp"
+            },
+            {
+                "size": "10M",
+                "path": "/var/volatile"
+            }
+        ]
+    },
+    "resources": {
+        "ram": "256M"
+    },
+    "features": [],
+    "mounts": []
+}

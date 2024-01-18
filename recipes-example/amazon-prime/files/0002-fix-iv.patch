@@ -1,0 +1,21 @@
+Source: Liberty Global Service B.V.
+Index: implementation/include/drm/Decrypt.inl
+===================================================================
+--- implementation.orig/include/drm/Decrypt.inl
++++ implementation/include/drm/Decrypt.inl
+@@ -177,10 +177,12 @@ namespace atv { namespace native { names
+             subSample = gst_buffer_new_wrapped(subSampleMem, bufferSize);
+         }
+ 
+-        GstBuffer * pIV = gst_buffer_new_allocate (NULL, sizeof(OcdmAesCounterContext) , NULL);
++        //GstBuffer * pIV = gst_buffer_new_allocate (NULL, sizeof(OcdmAesCounterContext) , NULL);
++	GstBuffer * pIV = gst_buffer_new_allocate (NULL,  AV_MPB_IV_SIZE, NULL);
+         GstMapInfo map;
+         gst_buffer_map (pIV, &map, (GstMapFlags)(GST_MAP_READWRITE));
+-        memcpy(map.data, contextPr, sizeof(OcdmAesCounterContext));
++        //memcpy(map.data, contextPr, sizeof(OcdmAesCounterContext));
++	memcpy(map.data, IVData, AV_MPB_IV_SIZE);
+         gst_buffer_unmap (pIV, &map);
+         GstBuffer * keyBuffer = gst_buffer_new();
+ 
+

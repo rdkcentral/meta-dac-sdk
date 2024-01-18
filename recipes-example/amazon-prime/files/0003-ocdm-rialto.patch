@@ -1,0 +1,62 @@
+Source: Liberty Global Service B.V.
+Index: implementation/src/media-pipeline-backend/CMakeLists.txt
+===================================================================
+--- implementation.orig/src/media-pipeline-backend/CMakeLists.txt
++++ implementation/src/media-pipeline-backend/CMakeLists.txt
+@@ -81,7 +81,7 @@ if(SINK_NAME)
+ endif()
+ 
+ add_library(${DRM_LIB_NAME} STATIC ${DRM_SOURCES})
+-target_link_libraries(${DRM_LIB_NAME} PUBLIC ocdm)
++target_link_libraries(${DRM_LIB_NAME} PUBLIC ocdmRialto)
+ configure_device_library_warnings(${DRM_LIB_NAME} FALSE)
+ set_target_properties(${DRM_LIB_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
+ 
+Index: implementation/src/media-pipeline-backend/GStreamerPipeline.cpp
+===================================================================
+--- implementation.orig/src/media-pipeline-backend/GStreamerPipeline.cpp
++++ implementation/src/media-pipeline-backend/GStreamerPipeline.cpp
+@@ -36,7 +36,7 @@
+ // The sink name is common in the RDK world.
+ // If needed it can be overrided during build.
+ #ifndef SINK_NAME
+-#define SINK_NAME "westerossink"
++#define SINK_NAME "videosink"
+ #endif
+ 
+ /* playbin flags */
+@@ -80,6 +80,8 @@ struct Video : public Base {
+ struct CustomData {
+     EventCallbacks* callbacks { nullptr };
+     GstElement* pipeline { nullptr };
++    GstElement* videosink { nullptr };
++    GstElement* audiosink { nullptr };
+     GstElement* app_source { nullptr };
+     GstState state { GST_STATE_NULL };
+ 
+@@ -650,6 +652,13 @@ static GStreamerErrorCode setup_pipeline
+ 
+     cdata->pipeline = gst_element_factory_make("playbin", NULL);
+ 
++    cdata->videosink = gst_element_factory_make("rialtomsevideosink", "videosink");
++    cdata->audiosink = gst_element_factory_make("rialtomseaudiosink", "audiosink");
++
++    // Add the video + audio sinks to the playbin
++    g_object_set(G_OBJECT(cdata->pipeline), "video-sink", cdata->videosink, NULL);
++    g_object_set(G_OBJECT(cdata->pipeline), "audio-sink", cdata->audiosink, NULL);
++
+     GstBus *bus = gst_element_get_bus(cdata->pipeline);
+     cdata->bus_watch_id = gst_bus_add_watch(bus, gst_bus_callback, (gpointer)(cdata));
+     gst_object_unref(bus);
+Index: implementation/src/media-pipeline-backend/GStreamerMediaPipelineBackendImpl.cpp
+===================================================================
+--- implementation.orig/src/media-pipeline-backend/GStreamerMediaPipelineBackendImpl.cpp
++++ implementation/src/media-pipeline-backend/GStreamerMediaPipelineBackendImpl.cpp
+@@ -8,6 +8,7 @@
+ #include "common/LogMacros.h"
+ 
+ #include <cinttypes>
++#include <gst/gst.h>
+ 
+ #include "GStreamerErrorMacros.h"
+ 

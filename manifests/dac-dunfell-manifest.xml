@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Author: Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
+-->
+<manifest>
+  <remote name="github"
+         fetch="https://github.com/"/>
+
+  <remote name="oe-org"
+         fetch="https://git.openembedded.org"/>
+
+  <remote name="yocto"
+         fetch="https://git.yoctoproject.org/"/>
+
+  <remote name="cmf" review="https://code.rdkcentral.com/r/"
+          fetch="https://code.rdkcentral.com/r/"/>
+
+  <default remote="github" revision="master" sync-j="32" />
+
+  <project remote="github"
+             name="yoctoproject/poky"
+         revision="f980ef9fec58217b4b743c0ee103d5957894676a"
+         upstream="dunfell"
+             path="."/>
+
+  <project remote="oe-org"
+             name="meta-openembedded"
+         upstream="dunfell"
+         revision="ca35402be56745e5664394b8ec18d7e2a3b353d1"
+             path="meta-openembedded"/>
+
+  <project remote="yocto"
+             name="meta-virtualization"
+         revision="dunfell"
+             path="meta-virtualization"/>
+
+  <project remote="yocto"
+             name="meta-raspberrypi"
+         revision="dunfell"
+             path="meta-raspberrypi"/>
+
+  <project remote="oe-org"
+             name="meta-python2"
+        revision="dunfell"
+            path="meta-python2"/>
+
+  <project remote="github"
+             name="meta-qt5/meta-qt5"
+         revision="dunfell"
+             path="meta-qt5"/>
+
+  <project remote="github"
+             name="kraj/meta-clang"
+         revision="8acc0b9c2a3942077d43f0baefc2841cc993fae1"
+         upstream="dunfell-clang12"
+             path="meta-clang"/>
+
+  <project remote="github"
+             name="Igalia/meta-webkit"
+         revision="270599a765743c2db5a96195b7f83877cde5d499"
+         upstream="dunfell"
+             path="meta-webkit"/>
+
+  <project remote="github"
+             name="stagingrdkm/meta-dac-sdk"
+         revision="master"
+             path="meta-dac-sdk"/>
+
+  <project remote="github"
+             name="stagingrdkm/meta-rdk-flutter"
+         revision="main"
+             path="meta-rdk-flutter"/>
+
+  <project remote="cmf"
+             name="rdk/components/generic/rdk-oe/meta-rdk-video"
+         revision="rdk-next"
+             path="meta-rdk-video"/>
+
+  <project remote="cmf"
+             name="rdk/components/generic/rdk-oe/meta-cmf"
+         revision="rdk-next"
+             path="meta-cmf"/>
+
+  <project remote="cmf"
+             name="rdk/components/generic/rdk-oe/meta-rdk"
+         revision="rdk-next"
+             path="meta-rdk"/>
+
+  <project remote="cmf"
+             name="rdk/components/generic/rdk-oe/meta-rdk-ext"
+         revision="rdk-next"
+             path="meta-rdk-ext"/>
+
+  <project remote="cmf"
+             name="rdk/components/generic/rdk-oe/meta-rdk-cobalt"
+         revision="rdk-next"
+             path="meta-rdk-cobalt"/>
+
+</manifest>
