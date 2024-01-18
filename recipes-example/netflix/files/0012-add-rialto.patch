@@ -1,19 +1,4 @@
 Source: Liberty Global Service B.V.
-Index: git/brcm/rdk_gstreamer_utils_soc.cpp
-===================================================================
---- git.orig/brcm/rdk_gstreamer_utils_soc.cpp
-+++ git/brcm/rdk_gstreamer_utils_soc.cpp
-@@ -129,8 +129,8 @@ namespace rdk_gstreamer_utils
-     GstElement * configureUIAudioSink_soc(bool TTSenabled)
-     {
-         GstElement *audioSink = NULL;
--        LOG_RGU("configureUIAudioSink_soc: : connecting autoaudiosink");
--        audioSink = gst_element_factory_make ("autoaudiosink","autoaudiosink");
-+        LOG_RGU("configureUIAudioSink_soc: : connecting rialtowebaudiosink");
-+        audioSink = gst_element_factory_make ("rialtowebaudiosink","rialtowebaudiosink");
- 
-         return audioSink;
-     }
 Index: git/rdk_gstreamer_utils.cpp
 ===================================================================
 --- git.orig/rdk_gstreamer_utils.cpp
