@@ -1,0 +1,14 @@
+Source: Liberty Global Service B.V.
+Index: starboard/src/third_party/starboard/rdk/shared/BUILD.gn
+===================================================================
+--- starboard.orig/src/third_party/starboard/rdk/shared/BUILD.gn
++++ starboard/src/third_party/starboard/rdk/shared/BUILD.gn
+@@ -35,7 +35,7 @@ declare_args() {
+   rdk_enable_ocdm = true
+   rdk_enable_cryptography = true
+   rdk_enable_cbcs = false
+-  rdk_enable_rfc_api = true
++  rdk_enable_rfc_api = false
+ }
+ 
+ pkg_config("glib") {

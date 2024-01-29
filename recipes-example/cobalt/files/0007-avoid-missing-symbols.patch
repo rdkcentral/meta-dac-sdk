@@ -1,0 +1,42 @@
+(2024.01.25) Stefan Verkoyen (sverkoyen.contractor@libertyglobal.com)
+RDKCMF-8947 Add cobalt/youtube24 DAC app to meta-dac-sdk
+
+Fix for missing symbols errors when trying to run cobalt24 as DAC app.
+In total there are 3 missing functions:
+HasSeekPenalty, RegisterFieldTrialOverride and AssociateReportingFieldTrial
+By removing the code that uses these functions, the error is gone. Also,
+no other error seems to be introduced by removing those source files.
+
+Find these missing symbols like this:
+readelf -s --wide libcobalt.so | grep UND | grep NOTYPE | grep GLOBAL
+
+
+Index: git/components/metrics/BUILD.gn
+===================================================================
+--- git.orig/components/metrics/BUILD.gn
++++ git/components/metrics/BUILD.gn
+@@ -131,6 +131,9 @@ static_library("metrics") {
+       "drive_metrics_provider_linux.cc",
+       "drive_metrics_provider_mac.mm",
+       "drive_metrics_provider_win.cc",
++      # Since above are disabled, nothing seems to implement
++      # HasSeekPenalty() used by below. So removing it.
++      "drive_metrics_provider.cc",
+       # Too many non-existent SB functionalities (e.g., base::TouchFile,
+       # MemoryMapped files, etc).
+       "file_metrics_provider.cc",
+Index: git/components/variations/BUILD.gn
+===================================================================
+--- git.orig/components/variations/BUILD.gn
++++ git/components/variations/BUILD.gn
+@@ -84,6 +84,10 @@ static_library("variations") {
+       "proto/permuted_entropy_cache.proto",
+       "proto/study.proto",
+       "proto/variations_seed.proto",
++      # These use RegisterFieldTrialOverride() and AssociateReportingFieldTrial()
++      # which are not included/built when using starboard
++      "variations_seed_processor.cc",
++      "variations_seed_simulator.cc"
+     ]
+   }
+ 

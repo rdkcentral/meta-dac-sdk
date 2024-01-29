@@ -45,6 +45,13 @@ Use build target **dac-image-cobalt**.  By default cobalt evergreen is **not** e
 
 However, currently this does not work on RPI target hosts: cobalt DAC app built with evergreen enabled, crashes on RPI. See comments in libcobalt_23.lts.stable.bbappend.
 
+## Building Cobalt 2024 DAC app
+
+By default version 23 is built. Edit conf/layer.conf and uncomment this line to build version 24 instead:
+```
+DISTRO_FEATURES_append = " cobalt-24 gstreamer1_18 dunfell"
+```
+
 # Building Netflix DAC app
 
 Netflix DAC app needs several things in order to build:
