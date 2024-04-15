@@ -8,3 +8,5 @@ SRC_URI += "file://0010-fix-module-h-cryptography.patch"
 do_install_prepend() {
     install -d ${D}/usr/include/opencdm
 }
+
+RDEPENDS_${PN}_remove = "rdkperf"

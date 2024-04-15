@@ -6,3 +6,5 @@ EXTRA_OECMAKE += "-DUSE_PROVISIONING=OFF -DBUILD_CRYPTOGRAPHY_TESTS=OFF"
 do_install_prepend() {
     install -d ${D}/usr/include/opencdm
 }
+
+RDEPENDS_${PN}_remove = "rdkperf"
