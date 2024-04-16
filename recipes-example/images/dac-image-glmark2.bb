@@ -1,10 +1,10 @@
-SUMMARY = "cog in OCI Container"
+SUMMARY = "OpenGL 2.0 and ES 2.0 benchmark in OCI Container"
 
 IMAGE_FSTYPES = "container oci"
 
 #inherit image
 #inherit image-oci
-inherit dac-image-base
+inherit dac-image-wayland
 
 IMAGE_CONTAINER_NO_DUMMY = "1"
 
