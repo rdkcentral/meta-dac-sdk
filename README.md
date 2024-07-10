@@ -1,31 +1,45 @@
-# meta-dac
-
+# meta-dac-sdk
+  # One time SDK Build environment setup on HOST 
+ 	# make sure that your Linux host has required packages needed for Yocto. 
+  	# These are defined in https://docs.yoctoproject.org/3.1.33/ref-manual/ref-system-requirements.html#required-packages-for-the-build-host
 	# On CentOS-7 switch default gcc to 7.x from https://www.softwarecollections.org/en/scls/rhscl/devtoolset-7/
-	[ -f /opt/rh/devtoolset-7/enable ] && source /opt/rh/devtoolset-7/enable
+	#[ -f /opt/rh/devtoolset-7/enable ] && source /opt/rh/devtoolset-7/enable
 
 	# Create build directory
 	mkdir build; cd build
 
 	# Install 'repo' tool from: https://android.googlesource.com/tools/repo
+ 	# following repo commands will download Yocto poky environment and other required meta-layers see manifest of https://github.com/rdkcentral/meta-dac-sdk/blob/master/manifests/dac-dunfell-manifest.xml
 	repo init -u https://github.com/rdkcentral/meta-dac-sdk/ -m manifests/dac-dunfell-manifest.xml
 	repo sync --no-clone-bundle -v -j$(getconf _NPROCESSORS_ONLN)
 
 	. ./oe-init-build-env
 	cp ../.repo/manifests/manifests/bblayers.conf conf/
 
-	# Select one of the target platform
+  	# Need to decide whether you compile Application binaries against ARM 32bit or x86 64bit, Select one of them
+ 	# At this stage we do not support Multi CPU Arch container images yet, defaulting to ARM 32bit  
 	# for ARMv7
 	echo 'MACHINE = "raspberrypi4"' >> conf/local.conf
 	# for x86_64
 	#echo 'MACHINE = "qemux86-64"' >> conf/local.conf
+ 
 
 	# By default, gfx libraries are removed from DAC rootfs
 	# Also libglvnd is used to provide egl/gles/mesa
 	# To use mesa provider instead and not remove the gfx libraries:
 	#echo 'DISTRO_FEATURES_remove = "cleanup_gfx"' >> conf/local.conf
+ 	# end of [One time SDK Build environment setup on HOST] 
+# Building your DAC application container image
+	#Above steps you only need to do the first time you setup the SDK. For subsequent uses, you only need to run the following command to configure the build environment:
+ 	# cd build
+	# . ./oe-init-build-env
 
-	# Test OCI images
-	bitbake dac-image-wayland-egl-test
+	# Now you can build the "DAC application container image" of your choice. 
+ 	# Note that you need to have associated yocto image recipe defined in meta-layer and use that as <your yocto image target>
+ 	# as per example image recipes in https://github.com/rdkcentral/meta-dac-sdk/tree/master/recipes-example/images
+  	# use bitbake <your yocto image target> to build the associated dac application container.
+   	# below commands build dac application container examples coming with SDK
+    	bitbake dac-image-wayland-egl-test
 	bitbake dac-image-wayland-egl-test-input
 	bitbake dac-image-essos-sample
 	bitbake dac-image-essos-egl
