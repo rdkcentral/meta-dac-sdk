@@ -1,0 +1,27 @@
+From 17bd9c4fbf6ed025e7e67db4dfe881d105cd5670 Mon Sep 17 00:00:00 2001
+From: Ansu Mathew <Ansu_Mathew@comcast.com>
+Date: Mon, 10 Mar 2025 09:08:15 +0000
+Subject: [PATCH] Fix-to-resolve-build-failures.patch
+
+---
+ .../starboard/rdk/arm/platform_configuration/BUILD.gn        | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/src/third_party/starboard/rdk/arm/platform_configuration/BUILD.gn b/src/third_party/starboard/rdk/arm/platform_configuration/BUILD.gn
+index 7d8e27dc..598c6417 100644
+--- a/src/third_party/starboard/rdk/arm/platform_configuration/BUILD.gn
++++ b/src/third_party/starboard/rdk/arm/platform_configuration/BUILD.gn
+@@ -49,5 +49,10 @@ config("platform_configuration") {
+     configs = [
+       "//third_party/starboard/rdk/shared/platform_configuration",
+     ]
++    cflags = [
++      "-Wno-unused-result",
++      "-Wno-stringop-truncation",
++      "-Wno-stringop-overflow",
++    ]
+   }
+ }
+-- 
+2.48.0
+
