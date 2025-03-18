@@ -1,0 +1,53 @@
+From f7a26079ea1dbdbcb09197419782a60411521d3e Mon Sep 17 00:00:00 2001
+From: Ansu Mathew <Ansu_Mathew@comcast.com>
+Date: Tue, 18 Mar 2025 11:47:45 +0000
+Subject: [PATCH] Adding missing enum in header file
+
+---
+ Source/ocdm/open_cdm.h | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+
+diff --git a/Source/ocdm/open_cdm.h b/Source/ocdm/open_cdm.h
+index 4acfd6a..50594cb 100644
+--- a/Source/ocdm/open_cdm.h
++++ b/Source/ocdm/open_cdm.h
+@@ -110,6 +110,21 @@ typedef enum {
+     PersistentLicense
+ } LicenseType;
+ 
++// ISO/IEC 23001-7 defines two Common Encryption Schemes with Full Sample and Subsample modes
++typedef enum {
++    Clear = 0,
++    AesCtr_Cenc,    // AES-CTR mode and Sub-Sample encryption
++    AesCbc_Cbc1,    // AES-CBC mode and Sub-Sample encryption
++    AesCtr_Cens,    // AES-CTR mode and Sub-Sample + patterned encryption
++    AesCbc_Cbcs     // AES-CBC mode and Sub-Sample + patterned encryption + Constant IV
++} EncryptionScheme;
++
++//CENC3.0 pattern is a number of encrypted blocks followed a number of clear blocks after which the pattern repeats.
++typedef struct {
++    uint32_t encrypted_blocks;
++    uint32_t clear_blocks;
++} EncryptionPattern;
++
+ /**
+  * Key status.
+  */
+@@ -144,6 +159,14 @@ typedef enum {
+     ERROR_SERVER_SERVICE_SPECIFIC = 0x8004C604,
+ } OpenCDMError;
+ 
++/**
++ * OpenCDM bool type. 0 is false, 1 is true.
++ */
++typedef enum {
++    OPENCDM_BOOL_FALSE = 0,
++    OPENCDM_BOOL_TRUE = 1
++} OpenCDMBool;
++
+ /**
+  * Registered callbacks with OCDM sessions.
+  */
+-- 
+2.48.0
+
