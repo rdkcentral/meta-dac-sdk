@@ -11,9 +11,9 @@ DEPENDS         += " virtual/libgles2"
 DEPENDS         += " libxkbcommon"
 DEPENDS         += " libepoxy"
 
-RDEPENDS_${PN}  += " qtwayland"
+RDEPENDS:${PN}  += " qtwayland"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 S = "${WORKDIR}/git/qt-egl-test"
 
@@ -23,4 +23,4 @@ SRC_URI = " \
 
 inherit qmake5
 
-FILES_${PN} += "${bindir}/*"
+FILES:${PN} += "${bindir}/*"

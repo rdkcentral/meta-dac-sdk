@@ -1,7 +1,7 @@
-DEPENDS_remove = "wpeframework-clientlibraries"
+DEPENDS:remove = "wpeframework-clientlibraries"
 DEPENDS += "wpeframework-ocdm-headers"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += "file://0002-remove-ocdm-find.patch"
 
 # 26 Jul 2023

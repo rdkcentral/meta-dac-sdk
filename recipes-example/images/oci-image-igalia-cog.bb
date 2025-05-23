@@ -10,18 +10,18 @@ IMAGE_CONTAINER_NO_DUMMY = "1"
 IMAGE_LINGUAS = " "
 LICENSE = "MIT"
 
-TOOLCHAIN_pn-wpewebkit = "clang"
-RUNTIME_pn-wpewebkit = "llvm"
-TOOLCHAIN_pn-wpewebkit-rdk = "clang"
-RUNTIME_pn-wpewebkit-rdk = "llvm"
-TOOLCHAIN_pn-cog = "clang"
-RUNTIME_pn-cog = "llvm"
+TOOLCHAIN:pn-wpewebkit = "clang"
+RUNTIME:pn-wpewebkit = "llvm"
+TOOLCHAIN:pn-wpewebkit-rdk = "clang"
+RUNTIME:pn-wpewebkit-rdk = "llvm"
+TOOLCHAIN:pn-cog = "clang"
+RUNTIME:pn-cog = "llvm"
 
-PACKAGECONFIG_pn-weston-cog = "weston-direct-display"
+PACKAGECONFIG:pn-weston-cog = "weston-direct-display"
 
-IMAGE_INSTALL_append = " cog"
+IMAGE_INSTALL:append = " cog"
 # dw: TODO: Missing RDEPENDS
-IMAGE_INSTALL_append = "${@bb.utils.contains('DISTRO_FEATURES', 'cleanup_gfx', '', ' libgles2-mesa', d)}"
+IMAGE_INSTALL:append = "${@bb.utils.contains('DISTRO_FEATURES', 'cleanup_gfx', '', ' libgles2-mesa', d)}"
 
 OCI_IMAGE_AUTHOR = "Damian Wrobel"
 OCI_IMAGE_AUTHOR_EMAIL = "dwrobel@ertelnet.rybnik.pl"

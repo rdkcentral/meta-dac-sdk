@@ -9,7 +9,7 @@ SRCREV = "d3e3d6c2be6516dd6b4ccfc04b129f8725b59baa"
 
 S = "${WORKDIR}/git"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += "file://0001-add-decrypt-ex.patch"
 
 do_compile[noexec] = "1"
@@ -22,4 +22,4 @@ do_install() {
   install -m 0644 ${S}/Source/ocdm/adapter/open_cdm_adapter.h ${D}${includedir}/opencdm
 }
 
-ALLOW_EMPTY_${PN} = "1"
+ALLOW_EMPTY:${PN} = "1"

@@ -7,7 +7,7 @@ DEPENDS="libdevmapper-native gpgme-native"
 
 inherit go native
 
-RDEPENDS_${PN} = " \
+RDEPENDS:${PN} = " \
      gpgme \
      libgpg-error \
      libassuan \
@@ -72,4 +72,4 @@ do_install() {
 #	install ${WORKDIR}/registries.conf ${D}/${sysconfdir}/containers/registries.conf
 }
 
-INSANE_SKIP_${PN} += "ldflags"
+INSANE_SKIP:${PN} += "ldflags"

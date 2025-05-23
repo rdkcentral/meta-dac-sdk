@@ -27,7 +27,7 @@
 	# By default, gfx libraries are removed from DAC rootfs
 	# Also libglvnd is used to provide egl/gles/mesa
 	# To use mesa provider instead and not remove the gfx libraries:
-	#echo 'DISTRO_FEATURES_remove = "cleanup_gfx"' >> conf/local.conf
+	#echo 'DISTRO_FEATURES:remove = "cleanup_gfx"' >> conf/local.conf
  	# end of [One time SDK Build environment setup on HOST] 
 # Building your DAC application container image
 	#Above steps you only need to do the first time you setup the SDK. For subsequent uses, you only need to run the following command to configure the build environment:
@@ -63,7 +63,7 @@ However, currently this does not work on RPI target hosts: cobalt DAC app built 
 
 By default version 23 is built. Edit conf/layer.conf and uncomment this line to build version 24 instead:
 ```
-DISTRO_FEATURES_append = " cobalt-24 gstreamer1_18 dunfell"
+DISTRO_FEATURES:append = " cobalt-24 gstreamer1_18 dunfell"
 ```
 
 # Building Netflix DAC app

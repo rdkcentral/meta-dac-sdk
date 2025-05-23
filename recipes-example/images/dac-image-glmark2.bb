@@ -11,7 +11,7 @@ IMAGE_CONTAINER_NO_DUMMY = "1"
 IMAGE_LINGUAS = " "
 LICENSE = "MIT"
 
-IMAGE_INSTALL_append = " glmark2"
+IMAGE_INSTALL:append = " glmark2"
 
 OCI_IMAGE_AUTHOR = "Damian Wrobel"
 OCI_IMAGE_AUTHOR_EMAIL = "dwrobel@ertelnet.rybnik.pl"

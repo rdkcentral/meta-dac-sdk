@@ -4,7 +4,7 @@ inherit  dac-image-sdl
 
 IMAGE_INSTALL = "chocolate-doom"
 
-IMAGE_INSTALL_append = " alsa-lib"
+IMAGE_INSTALL:append = " alsa-lib"
 
 # needed
 OCI_IMAGE_ENTRYPOINT = "/usr/bin/chocolate-doom"
