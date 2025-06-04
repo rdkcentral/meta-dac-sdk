@@ -1,0 +1,25 @@
+From c2333c7b9c2575cbec5e321b9c10dec409ddbecf Mon Sep 17 00:00:00 2001
+From: Ansu Mathew <Ansu_Mathew@comcast.com>
+Date: Tue, 18 Mar 2025 06:49:58 +0000
+Subject: [PATCH] Remove wrappers from compilation
+
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b1172878..d33e47be 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -228,7 +228,7 @@ add_subdirectory( ipc )
+ add_subdirectory( common )
+ add_subdirectory( media )
+ add_subdirectory( logging )
+-add_subdirectory( wrappers )
++#add_subdirectory( wrappers )
+ add_subdirectory( proto )
+ 
+ if( ENABLE_SERVER_MANAGER )
+-- 
+2.48.0
+
