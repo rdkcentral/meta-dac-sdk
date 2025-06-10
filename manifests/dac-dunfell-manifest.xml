@@ -62,7 +62,7 @@
              path="meta-webkit"/>
 
   <project remote="github"
-             name="stagingrdkm/meta-dac-sdk"
+             name="rdkcentral/meta-dac-sdk"
          revision="master"
              path="meta-dac-sdk"/>
 
