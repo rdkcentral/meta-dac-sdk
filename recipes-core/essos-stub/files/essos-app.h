@@ -100,6 +100,12 @@ typedef struct _EssTerminateListener
    void (*terminated)( void *userData );
 } EssTerminateListener;
 
+typedef enum _EssAppPlatformDisplayType
+{
+   EssAppPlatformDisplayType_direct,
+   EssAppPlatformDisplayType_wayland,
+   EssAppPlatformDisplayType_waylandExtension
+} EssAppPlatformDisplayType;
 
 /**
  * EssContextCreate

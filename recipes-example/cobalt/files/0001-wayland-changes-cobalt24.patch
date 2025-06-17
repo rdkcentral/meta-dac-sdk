@@ -1,0 +1,49 @@
+# The current EGL implementation used on the Raspberry Pi 
+# does not support the EGL pixel buffer surfaces that are required by the Cobalt implementation. 
+# This patch works around this issue by removing some checks from the Cobalt code.
+
+Index: git/cobalt/renderer/backend/egl/graphics_context.cc
+===================================================================
+--- git.orig/cobalt/renderer/backend/egl/graphics_context.cc
++++ git/cobalt/renderer/backend/egl/graphics_context.cc
+@@ -72,7 +72,7 @@ GraphicsContextEGL::GraphicsContextEGL(G
+   // when we need to make OpenGL calls that do not depend on a surface (e.g.
+   // creating a texture).
+   null_surface_ = new PBufferRenderTargetEGL(display, config, math::Size(0, 0));
+-  CHECK(!null_surface_->CreationError());
++//CHECK(!null_surface_->CreationError());
+ 
+   ScopedMakeCurrent scoped_current_context(this);
+ 
+Index: git/cobalt/renderer/backend/egl/graphics_system.cc
+===================================================================
+--- git.orig/cobalt/renderer/backend/egl/graphics_system.cc
++++ git/cobalt/renderer/backend/egl/graphics_system.cc
+@@ -102,7 +102,10 @@ base::Optional<ChooseConfigResult> Choos
+   // Return the first config that succeeds the above test.
+   EGLint num_configs = 0;
+   EGL_CALL(eglChooseConfig(display, attribute_list, NULL, 0, &num_configs));
+-  CHECK_LT(0, num_configs);
++  // CHECK_LT(0, num_configs);
++  if (!num_configs) {
++      return base::nullopt;
++  }
+ 
+   std::unique_ptr<EGLConfig[]> configs(new EGLConfig[num_configs]);
+   EGL_CALL_SIMPLE(eglChooseConfig(display, attribute_list, configs.get(),
+@@ -192,6 +195,15 @@ GraphicsSystemEGL::GraphicsSystemEGL(
+     }
+   }
+ 
++  if (!choose_config_results) {
++    DCHECK_EQ(EGL_SURFACE_TYPE, attribute_list[0]);
++    EGLint& surface_type_value = attribute_list[1];
++
++    surface_type_value &= ~EGL_PBUFFER_BIT;
++    choose_config_results =
++        ChooseConfig(display_, attribute_list, system_window);
++  }
++
+   DCHECK(choose_config_results);
+ 
+   config_ = choose_config_results->config;

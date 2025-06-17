@@ -1,0 +1,72 @@
+From caf5723e4453cab57def17f67623b66d4b245f9b Mon Sep 17 00:00:00 2001
+From: Ansu Mathew <Ansu_Mathew@comcast.com>
+Date: Tue, 10 Jun 2025 09:11:47 +0100
+Subject: [PATCH] Adding missing enum in header file
+
+---
+ Source/ocdm/open_cdm.h | 30 +++++++++++++++++++++++++++++-
+ 1 file changed, 29 insertions(+), 1 deletion(-)
+
+diff --git a/Source/ocdm/open_cdm.h b/Source/ocdm/open_cdm.h
+index 4acfd6a..f726a4a 100644
+--- a/Source/ocdm/open_cdm.h
++++ b/Source/ocdm/open_cdm.h
+@@ -110,6 +110,21 @@ typedef enum {
+     PersistentLicense
+ } LicenseType;
+ 
++// ISO/IEC 23001-7 defines two Common Encryption Schemes with Full Sample and Subsample modes
++typedef enum {
++    Clear = 0,
++    AesCtr_Cenc,    // AES-CTR mode and Sub-Sample encryption
++    AesCbc_Cbc1,    // AES-CBC mode and Sub-Sample encryption
++    AesCtr_Cens,    // AES-CTR mode and Sub-Sample + patterned encryption
++    AesCbc_Cbcs     // AES-CBC mode and Sub-Sample + patterned encryption + Constant IV
++} EncryptionScheme;
++
++//CENC3.0 pattern is a number of encrypted blocks followed a number of clear blocks after which the pattern repeats.
++typedef struct {
++    uint32_t encrypted_blocks;
++    uint32_t clear_blocks;
++} EncryptionPattern;
++
+ /**
+  * Key status.
+  */
+@@ -131,19 +146,32 @@ typedef enum {
+ typedef enum {
+     ERROR_NONE = 0,
+     ERROR_UNKNOWN = 1,
+-    ERROR_MORE_DATA_AVAILBALE=2,
++    ERROR_MORE_DATA_AVAILABLE = 2,
++    ERROR_INTERFACE_NOT_IMPLEMENTED = 3,
++    ERROR_BUFFER_TOO_SMALL = 4,
+     ERROR_INVALID_ACCESSOR = 0x80000001,
+     ERROR_KEYSYSTEM_NOT_SUPPORTED = 0x80000002,
+     ERROR_INVALID_SESSION = 0x80000003,
+     ERROR_INVALID_DECRYPT_BUFFER = 0x80000004,
+     ERROR_OUT_OF_MEMORY = 0x80000005,
++    ERROR_METHOD_NOT_IMPLEMENTED = 0x80000006,
+     ERROR_FAIL = 0x80004005,
+     ERROR_INVALID_ARG = 0x80070057,
+     ERROR_SERVER_INTERNAL_ERROR = 0x8004C600,
+     ERROR_SERVER_INVALID_MESSAGE = 0x8004C601,
+     ERROR_SERVER_SERVICE_SPECIFIC = 0x8004C604,
++    ERROR_BUSY_CANNOT_INITIALIZE = 0x8004DD00
++
+ } OpenCDMError;
+ 
++/**
++ * OpenCDM bool type. 0 is false, 1 is true.
++ */
++typedef enum {
++    OPENCDM_BOOL_FALSE = 0,
++    OPENCDM_BOOL_TRUE = 1
++} OpenCDMBool;
++
+ /**
+  * Registered callbacks with OCDM sessions.
+  */
+-- 
+2.49.0
+

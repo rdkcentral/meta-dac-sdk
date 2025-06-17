@@ -1,8 +1,8 @@
 PACKAGECONFIG += "opencdm"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-SRC_URI += "file://0003_skip_codec_checks.patch;patchdir=${WORKDIR}/starboard"
-SRC_URI += "file://0004-enable-vp9.patch;patchdir=${WORKDIR}/starboard"
+SRC_URI += "file://0003_skip_codec_checks.patch;patchdir=../starboard"
+SRC_URI += "file://0004-enable-vp9.patch;patchdir=../starboard"
 
 ### to remove all wpeframework deps
 #DEPENDS_remove = "wpeframework-clientlibraries"
