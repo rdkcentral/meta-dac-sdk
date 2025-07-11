@@ -63,7 +63,7 @@
 
   <project remote="github"
              name="rdkcentral/meta-dac-sdk"
-         revision="master"
+         revision="develop"
              path="meta-dac-sdk"/>
 
   <project remote="github"
