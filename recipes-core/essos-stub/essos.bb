@@ -9,6 +9,7 @@ inherit autotools pkgconfig
 SRC_URI += " \
     file://essos.cpp \
     file://essos-app.h \
+    file://essos-system.h \
     file://configure.ac \
     file://Makefile.am"
 

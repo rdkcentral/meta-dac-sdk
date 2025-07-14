@@ -243,3 +243,13 @@ void EssContextRunEventLoopOnce( EssCtx *ctx)
 void EssContextUpdateDisplay( EssCtx *ctx )
 {
 }
+
+/**
+ * EssContextGetAppPlatformDisplayType
+ *
+ * Returns true app platform display type
+ */
+EssAppPlatformDisplayType EssContextGetAppPlatformDisplayType( EssCtx *ctx )
+{
+    return EssAppPlatformDisplayType_wayland;
+}
