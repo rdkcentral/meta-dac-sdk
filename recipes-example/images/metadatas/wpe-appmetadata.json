@@ -11,7 +11,7 @@
     "storage": {
         "persistent": [
             {
-                "size": "10M",
+                "size": "50M",
                 "path": "/home/root"
             }
         ]
