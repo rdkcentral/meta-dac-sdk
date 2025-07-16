@@ -1,6 +1,9 @@
 SUMMARY = "cog in DAC Container"
 LICENSE = "MIT"
 
+inherit features_check
+REQUIRED_DISTRO_FEATURES += "igalia-wpe"
+
 # TODO: inherit also gstreamer class when it will be ready
 inherit dac-image-wayland
 
