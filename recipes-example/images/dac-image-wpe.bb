@@ -7,7 +7,11 @@ IMAGE_INSTALL = "cog"
 IMAGE_INSTALL += "liberation-fonts"
 
 OCI_IMAGE_ENTRYPOINT = "/usr/bin/cog"
-OCI_IMAGE_ENTRYPOINT_ARGS = "http://keycode.info"
+OCI_IMAGE_ENTRYPOINT_ARGS = "https://ytlr-cert.appspot.com/2021/main.html"
+
+OCI_IMAGE_ENV_VARS += "WEBKIT_GST_QUIRKS=rialto"
+OCI_IMAGE_ENV_VARS += "WEBKIT_GST_HOLE_PUNCH_QUIRK=rialto"
+OCI_IMAGE_ENV_VARS += "WEBKIT_GST_ENABLE_AUDIO_MIXER=1"
 
 APP_METADATA_PATH = "metadatas/wpe-appmetadata.json"
 
