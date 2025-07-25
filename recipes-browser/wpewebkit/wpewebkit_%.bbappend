@@ -1,2 +1,2 @@
-DEPENDS_remove = "qtbase"
-DEPENDS_remove = "qtbase-native"
+DEPENDS:remove = "qtbase"
+DEPENDS:remove = "qtbase-native"

@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=3b83ef96387f14655fc854ddc3c6bd57"
 
 DEPENDS = "skopeo"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRCREV_umoci = "758044fc26ad65eb900143e90d1e22c2d6e4484d"
 SRC_URI = "git://github.com/opencontainers/umoci.git;branch=main;name=umoci;destsuffix=github.com/opencontainers/umoci \

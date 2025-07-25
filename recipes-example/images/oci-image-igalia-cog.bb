@@ -19,9 +19,9 @@ RUNTIME_pn-cog = "llvm"
 
 PACKAGECONFIG_pn-weston-cog = "weston-direct-display"
 
-IMAGE_INSTALL_append = " cog"
+IMAGE_INSTALL:append = " cog"
 # dw: TODO: Missing RDEPENDS
-IMAGE_INSTALL_append = "${@bb.utils.contains('DISTRO_FEATURES', 'cleanup_gfx', '', ' libgles2-mesa', d)}"
+IMAGE_INSTALL:append = "${@bb.utils.contains('DISTRO_FEATURES', 'cleanup_gfx', '', ' libgles2-mesa', d)}"
 
 OCI_IMAGE_AUTHOR = "Damian Wrobel"
 OCI_IMAGE_AUTHOR_EMAIL = "dwrobel@ertelnet.rybnik.pl"
