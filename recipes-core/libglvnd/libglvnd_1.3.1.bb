@@ -42,19 +42,19 @@ PR               = "r1"
 LICENSE          = "MIT"
 LIC_FILES_CHKSUM = "file://README.md"
 # libglvnd main license (excluding components listed below)
-LIC_FILES_CHKSUM_append = ";beginline=327;endline=352;md5=ee3db672533fd807fc44edf5c6932553"
+LIC_FILES_CHKSUM:append = ";beginline=327;endline=352;md5=ee3db672533fd807fc44edf5c6932553"
 # libglvnd contains list.h, a linked list implementation from the X.Org project.
-LIC_FILES_CHKSUM_append = ";beginline=363;endline=383;md5=518e703e224ecbcc49ffadc95e3a9d83"
+LIC_FILES_CHKSUM:append = ";beginline=363;endline=383;md5=518e703e224ecbcc49ffadc95e3a9d83"
 # libglvnd contains code from the Mesa project
-LIC_FILES_CHKSUM_append = ";beginline=394;endline=411;md5=188f08faf892572f4a313521b96ac3ae"
+LIC_FILES_CHKSUM:append = ";beginline=394;endline=411;md5=188f08faf892572f4a313521b96ac3ae"
 # libglvnd uses the hash table implementation 'uthash'
-LIC_FILES_CHKSUM_append = ";beginline=421;endline=441;md5=e997639cdaac5cd71693cbadbc3e1256"
+LIC_FILES_CHKSUM:append = ";beginline=421;endline=441;md5=e997639cdaac5cd71693cbadbc3e1256"
 # libglvnd uses the buildconf autotools bootstrapping script 'autogen.sh'
-LIC_FILES_CHKSUM_append = ";beginline=451;endline=480;md5=f01159d8d3b3053aa8461511a789a1a4"
+LIC_FILES_CHKSUM:append = ";beginline=451;endline=480;md5=f01159d8d3b3053aa8461511a789a1a4"
 # libglvnd uses the `AX_PTHREAD` autoconf macro for detecting pthreads.
-LIC_FILES_CHKSUM_append = ";beginline=487;endline=514;md5=e2c3384f49302f6d2aa88705b4e96b41"
+LIC_FILES_CHKSUM:append = ";beginline=487;endline=514;md5=e2c3384f49302f6d2aa88705b4e96b41"
 # libglvnd uses the cJSON library for reading JSON files
-LIC_FILES_CHKSUM_append = ";beginline=512;endline=540;md5=5da5d1decd5e8df09d57c7f9d50d5231"
+LIC_FILES_CHKSUM:append = ";beginline=512;endline=540;md5=5da5d1decd5e8df09d57c7f9d50d5231"
 
 MAINTAINER       = "Damian Wrobel <dwrobel@ertelnet.rybnik.pl>"
 
@@ -87,7 +87,7 @@ PACKAGECONFIG[opengl]     = ",,"
 #PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'libglvnd-as-stubs-provider', 'stubs_only', '', d)} \
 #                   asm tls ${@bb.utils.filter('DISTRO_FEATURES', 'x11', d)}"
 
-do_install_append() {
+do_install:append() {
     # If enabled, it will install only stubs (for the linking process)
     # In practise, it will only generate development (-dev) sub-package.
     if ${@bb.utils.contains('PACKAGECONFIG', 'stubs_only', 'true', 'false', d)}; then

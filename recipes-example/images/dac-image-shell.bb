@@ -2,7 +2,7 @@ SUMMARY = "DAC Container image with shell"
 
 inherit  dac-image-base
 
-IMAGE_INSTALL_append = " libgcc"
+IMAGE_INSTALL:append = " libgcc"
 
 # needed
 OCI_IMAGE_ENTRYPOINT = "/bin/sh"

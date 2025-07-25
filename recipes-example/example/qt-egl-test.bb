@@ -13,7 +13,7 @@ DEPENDS         += " libepoxy"
 
 RDEPENDS_${PN}  += " qtwayland"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 S = "${WORKDIR}/git/qt-egl-test"
 

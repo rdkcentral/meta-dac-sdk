@@ -2,7 +2,7 @@ SUMMARY = "Base class for DAC Images with wayland egl support"
 
 inherit  dac-image-base
 
-IMAGE_INSTALL_append = " wayland"
+IMAGE_INSTALL:append = " wayland"
 
 cleanup_hw_dependent_libs () {
     rm -rf ${IMAGE_ROOTFS}/usr/lib/libEGL*

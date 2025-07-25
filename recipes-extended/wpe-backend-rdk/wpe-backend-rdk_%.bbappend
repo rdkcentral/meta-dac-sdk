@@ -1,1 +1,1 @@
-PACKAGECONFIG_remove = "gamepad"
+PACKAGECONFIG:remove = "gamepad"

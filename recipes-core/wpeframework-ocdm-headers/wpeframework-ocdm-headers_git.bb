@@ -9,7 +9,7 @@ SRCREV = "d3e3d6c2be6516dd6b4ccfc04b129f8725b59baa"
 
 S = "${WORKDIR}/git"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += "file://0001-add-decrypt-ex.patch"
 SRC_URI += "file://0001-Adding-missing-enum-in-header-file.patch"
 
