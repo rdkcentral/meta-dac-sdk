@@ -1,0 +1,274 @@
+commit 3035cf746fbbc8ce60d19158806a8d1006bed95e
+Author: Przemyslaw Gorszkowski <pgorszkowski@igalia.com>
+Date:   Thu Apr 10 19:15:31 2025
+
+    Add initial support for freeze and resume of Page Lifecycle API
+    
+    - Introduced the `PageLifecycleAPIEnabled` preference toggle in WebPreferences (ON by default).
+    - Implemented `freeze()` and `resume()` methods in `Document` to dispatch appropriate lifecycle events.
+    - Added support for `onfreeze` and `onresume` event handlers in the IDL.
+    - Included `freeze` in `EventNames`.
+
+diff --git a/Source/WTF/Scripts/Preferences/WebPreferences.yaml b/Source/WTF/Scripts/Preferences/WebPreferences.yaml
+index cc86ce53bb4a..59865fea5076 100644
+--- a/Source/WTF/Scripts/Preferences/WebPreferences.yaml
++++ b/Source/WTF/Scripts/Preferences/WebPreferences.yaml
+@@ -1698,6 +1698,20 @@ PDFPluginEnabled:
+     WebKit:
+       default: true
+ 
++PageLifecycleAPIEnabled:
++  type: bool
++  status: testable
++  category: dom
++  humanReadableName: "Page Lifecycle API"
++  humanReadableDescription: "Enable the Page Lifecycle API"
++  defaultValue:
++    WebKitLegacy:
++      default: false
++    WebKit:
++      default: true
++    WebCore:
++      default: true
++
+ PageVisibilityBasedProcessSuppressionEnabled:
+   type: bool
+   webcoreBinding: none
+diff --git a/Source/WebCore/dom/Document.cpp b/Source/WebCore/dom/Document.cpp
+index 7c2531478be7..c292f97d3c70 100644
+--- a/Source/WebCore/dom/Document.cpp
++++ b/Source/WebCore/dom/Document.cpp
+@@ -9245,6 +9245,22 @@ bool Document::lazyImageLoadingEnabled() const
+     return m_settings->lazyImageLoadingEnabled() && !m_quirks->shouldDisableLazyImageLoadingQuirk();
+ }
+ 
++// https://wicg.github.io/page-lifecycle/spec.html#freeze-steps
++void Document::freeze()
++{
++    m_frozen = true;
++
++    dispatchEvent(Event::create(eventNames().freezeEvent, Event::CanBubble::No, Event::IsCancelable::No));
++}
++
++// https://wicg.github.io/page-lifecycle/spec.html#resume-steps
++void Document::resume()
++{
++    dispatchEvent(Event::create(eventNames().resumeEvent, Event::CanBubble::No, Event::IsCancelable::No));
++
++    m_frozen = false;
++}
++
+ } // namespace WebCore
+ 
+ #undef DOCUMENT_RELEASE_LOG
+diff --git a/Source/WebCore/dom/Document.h b/Source/WebCore/dom/Document.h
+index 59d8b98b4dad..4ae2ed5c4f9f 100644
+--- a/Source/WebCore/dom/Document.h
++++ b/Source/WebCore/dom/Document.h
+@@ -1695,6 +1695,8 @@ public:
+ 
+     // This should be used over the settings lazy loading image flag due to a quirk, which may occur causing website images to fail to load properly.
+     bool lazyImageLoadingEnabled() const;
++    void freeze();
++    void resume();
+ 
+ protected:
+     enum ConstructionFlags { Synthesized = 1, NonRenderedPlaceholder = 1 << 1 };
+@@ -2228,6 +2230,8 @@ private:
+     mutable RefPtr<Logger> m_logger;
+     RefPtr<StringCallback> m_consoleMessageListener;
+ 
++    bool m_frozen { false };
++
+     static bool hasEverCreatedAnAXObjectCache;
+ 
+     RefPtr<DocumentTimeline> m_timeline;
+diff --git a/Source/WebCore/dom/Document.idl b/Source/WebCore/dom/Document.idl
+index b5cc4978066a..b7a2e008ac09 100644
+--- a/Source/WebCore/dom/Document.idl
++++ b/Source/WebCore/dom/Document.idl
+@@ -94,6 +94,9 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
+ 
+     // Non standard: It has been dropped from Blink already.
+     RenderingContext? getCSSCanvasContext(DOMString contextId, DOMString name, long width, long height);
++
++    [EnabledBySetting=PageLifecycleAPIEnabled] attribute EventHandler onfreeze;
++    [EnabledBySetting=PageLifecycleAPIEnabled] attribute EventHandler onresume;
+ };
+ 
+ enum DocumentReadyState { "loading", "interactive", "complete" };
+diff --git a/Source/WebCore/dom/EventNames.h b/Source/WebCore/dom/EventNames.h
+index 3b94b67d2134..7eb3d7dae43d 100644
+--- a/Source/WebCore/dom/EventNames.h
++++ b/Source/WebCore/dom/EventNames.h
+@@ -130,6 +130,7 @@ namespace WebCore {
+     macro(focusin) \
+     macro(focusout) \
+     macro(formdata) \
++    macro(freeze) \
+     macro(gamepadconnected) \
+     macro(gamepaddisconnected) \
+     macro(gatheringstatechange) \
+diff --git a/Source/WebCore/history/BackForwardCache.cpp b/Source/WebCore/history/BackForwardCache.cpp
+index 37be18dcaa5b..94e7a218a474 100644
+--- a/Source/WebCore/history/BackForwardCache.cpp
++++ b/Source/WebCore/history/BackForwardCache.cpp
+@@ -403,22 +403,16 @@ static void destroyRenderTree(Frame& mainFrame)
+     }
+ }
+ 
+-static void firePageHideEventRecursively(Frame& frame)
++static void stopLoadingRecursively(Frame& frame)
+ {
+     auto* document = frame.document();
+     if (!document)
+         return;
+ 
+-    // stopLoading() will fire the pagehide event in each subframe and the HTML specification states
+-    // that the parent document's ignore-opens-during-unload counter should be incremented while the
+-    // pagehide event is being fired in its subframes:
+-    // https://html.spec.whatwg.org/multipage/browsers.html#unload-a-document
+-    IgnoreOpensDuringUnloadCountIncrementer ignoreOpensDuringUnloadCountIncrementer(document);
+-
+-    frame.loader().stopLoading(UnloadEventPolicy::UnloadAndPageHide);
++    frame.loader().stopLoading(UnloadEventPolicy::None);
+ 
+     for (RefPtr<Frame> child = frame.tree().firstChild(); child; child = child->tree().nextSibling())
+-        firePageHideEventRecursively(*child);
++        stopLoadingRecursively(*child);
+ }
+ 
+ std::unique_ptr<CachedPage> BackForwardCache::trySuspendPage(Page& page, ForceSuspension forceSuspension)
+@@ -437,8 +431,13 @@ std::unique_ptr<CachedPage> BackForwardCache::trySuspendPage(Page& page, ForceSu
+     if (CheckedRef focusController { page.focusController() }; focusController->focusedFrame())
+         focusController->setFocusedFrame(&page.mainFrame());
+ 
+-    // Fire the pagehide event in all frames.
+-    firePageHideEventRecursively(page.mainFrame());
++    // Stop loading in all frames without triggering events pagehide and unload.
++    stopLoadingRecursively(page.mainFrame());
++
++    // TODO: should we trigger freeze for all frames?
++    if (auto* document = page.mainFrame().document()) {
++        document->freeze();
++    }
+ 
+     destroyRenderTree(page.mainFrame());
+ 
+diff --git a/Source/WebCore/html/canvas/WebGLRenderingContextBase.cpp b/Source/WebCore/html/canvas/WebGLRenderingContextBase.cpp
+index bb227faa27a8..13fc982e8ff6 100644
+--- a/Source/WebCore/html/canvas/WebGLRenderingContextBase.cpp
++++ b/Source/WebCore/html/canvas/WebGLRenderingContextBase.cpp
+@@ -6786,6 +6786,15 @@ const char* WebGLRenderingContextBase::activeDOMObjectName() const
+ void WebGLRenderingContextBase::suspend(ReasonForSuspension)
+ {
+     m_isSuspended = true;
++    if (m_nonCompositedWebGLEnabled) {
++            if (m_scissorEnabled)
++                m_context->disable(GraphicsContextGL::SCISSOR_TEST);
++            m_context->clearColor(0, 0, 0, 0);
++            m_context->clear(GraphicsContextGL::COLOR_BUFFER_BIT);
++            downcast<Nicosia::ContentLayerTextureMapperImpl>(downcast<Nicosia::ContentLayer>(m_context->platformLayer())->impl()).swapBuffersIfNeeded();
++            if (m_scissorEnabled)
++                m_context->enable(GraphicsContextGL::SCISSOR_TEST);
++    }
+ }
+ 
+ void WebGLRenderingContextBase::resume()
+diff --git a/Source/WebKit/UIProcess/API/glib/WebKitWebView.cpp b/Source/WebKit/UIProcess/API/glib/WebKitWebView.cpp
+index 8a6a11bf5ad2..8cbb3fbf8f4f 100644
+--- a/Source/WebKit/UIProcess/API/glib/WebKitWebView.cpp
++++ b/Source/WebKit/UIProcess/API/glib/WebKitWebView.cpp
+@@ -5425,8 +5425,51 @@ webkit_web_view_get_default_content_security_policy(WebKitWebView* webView)
+     return webView->priv->defaultContentSecurityPolicy.data();
+ }
+ 
++void webkit_web_view_freeze(WebKitWebView *webView, GCancellable* cancellable, GAsyncReadyCallback callback, gpointer userData)
++{
++    g_return_if_fail(WEBKIT_IS_WEB_VIEW(webView));
++
++    GRefPtr<GTask> task = adoptGRef(g_task_new(webView, cancellable, callback, userData));
++    getPage(webView).suspend([task = WTFMove(task)](bool success) {
++        g_print("webkit_web_view_freeze callback success: %d\n", success);
++        if (g_task_return_error_if_cancelled(task.get()))
++            return;
++        g_task_return_boolean(task.get(), success);
++    });
++}
++
++gboolean webkit_web_view_freeze_finish(WebKitWebView* webView, GAsyncResult* result, GError** error)
++{
++    g_return_val_if_fail(WEBKIT_IS_WEB_VIEW(webView), false);
++    g_return_val_if_fail(g_task_is_valid(result, webView), false);
++
++    return g_task_propagate_boolean(G_TASK(result), error);
++}
++
++void webkit_web_view_resume_frozen(WebKitWebView *webView, GCancellable* cancellable, GAsyncReadyCallback callback, gpointer userData)
++{
++    g_return_if_fail(WEBKIT_IS_WEB_VIEW(webView));
++
++    GRefPtr<GTask> task = adoptGRef(g_task_new(webView, cancellable, callback, userData));
++    getPage(webView).resume([task = WTFMove(task)](bool success) {
++        if (g_task_return_error_if_cancelled(task.get()))
++            return;
++        g_print("webkit_web_view_resume_freeze callback success: %d\n", success);
++        g_task_return_boolean(task.get(), success);
++    });
++}
++
++gboolean webkit_web_view_resume_frozen_finish(WebKitWebView* webView, GAsyncResult* result, GError** error)
++{
++    g_return_val_if_fail(WEBKIT_IS_WEB_VIEW(webView), false);
++    g_return_val_if_fail(g_task_is_valid(result, webView), false);
++
++    return g_task_propagate_boolean(G_TASK(result), error);
++}
++
+ void webkit_web_view_suspend(WebKitWebView *webView)
+ {
++    g_print("webkit_web_view_suspend DEPRECATED\n");
+     g_return_if_fail(WEBKIT_IS_WEB_VIEW(webView));
+ 
+     auto viewStateFlags = webView->priv->view->viewState();
+@@ -5436,6 +5479,7 @@ void webkit_web_view_suspend(WebKitWebView *webView)
+ 
+ void webkit_web_view_resume(WebKitWebView *webView)
+ {
++    g_print("webkit_web_view_resume DEPRECATED\n");
+     g_return_if_fail(WEBKIT_IS_WEB_VIEW(webView));
+ 
+     auto viewStateFlags = webView->priv->view->viewState();
+diff --git a/Source/WebKit/UIProcess/API/wpe/WebKitWebView.h b/Source/WebKit/UIProcess/API/wpe/WebKitWebView.h
+index 74870ebe28bc..e258d71f9532 100644
+--- a/Source/WebKit/UIProcess/API/wpe/WebKitWebView.h
++++ b/Source/WebKit/UIProcess/API/wpe/WebKitWebView.h
+@@ -655,6 +655,28 @@ webkit_web_view_get_web_extension_mode               (WebKitWebView
+ WEBKIT_API const gchar*
+ webkit_web_view_get_default_content_security_policy  (WebKitWebView             *web_view);
+ 
++WEBKIT_API void
++webkit_web_view_freeze                               (WebKitWebView               *web_view,
++                                                      GCancellable              *cancellable,
++                                                      GAsyncReadyCallback       callback,
++                                                      gpointer                  user_data);
++
++WEBKIT_API gboolean
++webkit_web_view_freeze_finish                        (WebKitWebView             *web_view,
++                                                      GAsyncResult              *result,
++                                                      GError                    **error);
++
++WEBKIT_API void
++webkit_web_view_resume_frozen                        (WebKitWebView               *web_view,
++                                                      GCancellable              *cancellable,
++                                                      GAsyncReadyCallback       callback,
++                                                      gpointer                  user_data);
++
++WEBKIT_API gboolean
++webkit_web_view_resume_frozen_finish                 (WebKitWebView             *web_view,
++                                                      GAsyncResult              *result,
++                                                      GError                    **error);
++
+ WEBKIT_API void
+ webkit_web_view_suspend                              (WebKitWebView               *web_view);
+ 
