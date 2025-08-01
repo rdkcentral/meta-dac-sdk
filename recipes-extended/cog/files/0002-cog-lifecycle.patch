@@ -1,0 +1,129 @@
+From 6aa8dc6d5663b326495c7d30669c578066feeb00 Mon Sep 17 00:00:00 2001
+From: Przemyslaw Gorszkowski <pgorszkowski@igalia.com>
+Date: Wed, 28 May 2025 14:32:34 +0200
+Subject: [PATCH] Page lifecycle api
+
+---
+ launcher/cog-launcher.c | 48 ++++++++++++++++++++++++++++++++---------
+ launcher/cogctl.c       | 30 ++++++++++++++++++++++++++
+ 2 files changed, 68 insertions(+), 10 deletions(-)
+
+diff --git a/launcher/cog-launcher.c b/launcher/cog-launcher.c
+index e586c687..936051d8 100644
+--- a/launcher/cog-launcher.c
++++ b/launcher/cog-launcher.c
+@@ -129,28 +129,50 @@ on_action_quit(G_GNUC_UNUSED GAction *action, G_GNUC_UNUSED GVariant *param, Cog
+ }
+ 
+ static void
+-on_action_prev(G_GNUC_UNUSED GAction *action, G_GNUC_UNUSED GVariant *param, CogLauncher *launcher)
++on_action_open(G_GNUC_UNUSED GAction *action, GVariant *param, CogLauncher *launcher)
+ {
+-    webkit_web_view_go_back(cog_shell_get_web_view(launcher->shell));
++    g_return_if_fail(g_variant_is_of_type(param, G_VARIANT_TYPE_STRING));
++    webkit_web_view_load_uri(cog_shell_get_web_view(launcher->shell), g_variant_get_string(param, NULL));
+ }
+ 
+-static void
+-on_action_next(G_GNUC_UNUSED GAction *action, G_GNUC_UNUSED GVariant *param, CogLauncher *launcher)
++#define DEFINE_SIMPLE_ACTION_HANDLER(name, wk_name) \
++    static void on_action_##name(G_GNUC_UNUSED GAction *action, G_GNUC_UNUSED GVariant *param, CogLauncher *launcher) \
++    { \
++        webkit_web_view_##wk_name(cog_shell_get_web_view(launcher->shell)); \
++    }
++
++DEFINE_SIMPLE_ACTION_HANDLER(prev, go_back)
++DEFINE_SIMPLE_ACTION_HANDLER(next, go_forward)
++DEFINE_SIMPLE_ACTION_HANDLER(reload, reload)
++DEFINE_SIMPLE_ACTION_HANDLER(hide, hide)
++DEFINE_SIMPLE_ACTION_HANDLER(show, show)
++DEFINE_SIMPLE_ACTION_HANDLER(suspend, suspend)
++DEFINE_SIMPLE_ACTION_HANDLER(resume, resume)
++
++static void freeze_callback(GObject* object, GAsyncResult* result, GMainLoop *loop)
+ {
+-    webkit_web_view_go_forward(cog_shell_get_web_view(launcher->shell));
++    bool success = webkit_web_view_freeze_finish(WEBKIT_WEB_VIEW(object), result, NULL);
++    g_print("Freeze operation %s\n", success ? "succeeded" : "failed");
++    g_main_loop_quit(loop);
+ }
+ 
+ static void
+-on_action_reload(G_GNUC_UNUSED GAction *action, G_GNUC_UNUSED GVariant *param, CogLauncher *launcher)
++on_action_freeze(G_GNUC_UNUSED GAction *action, GVariant *param, CogLauncher *launcher)
+ {
+-    webkit_web_view_reload(cog_shell_get_web_view(launcher->shell));
++    g_autoptr(GMainLoop) loop = g_main_loop_new(NULL, FALSE);
++    webkit_web_view_freeze(cog_shell_get_web_view(launcher->shell), NULL, (GAsyncReadyCallback) freeze_callback, loop);
++    g_main_loop_run(loop);
+ }
+ 
++static void resume_frozen_callback(GObject* object, GAsyncResult* result, gpointer user_data)
++{
++    bool success = webkit_web_view_resume_frozen_finish(WEBKIT_WEB_VIEW(object), result, NULL);
++    g_print("Resume operation %s\n", success ? "succeeded" : "failed");
++}
+ static void
+-on_action_open(G_GNUC_UNUSED GAction *action, GVariant *param, CogLauncher *launcher)
++on_action_resume_frozen(G_GNUC_UNUSED GAction *action, GVariant *param, CogLauncher *launcher)
+ {
+-    g_return_if_fail(g_variant_is_of_type(param, G_VARIANT_TYPE_STRING));
+-    webkit_web_view_load_uri(cog_shell_get_web_view(launcher->shell), g_variant_get_string(param, NULL));
++    webkit_web_view_resume_frozen(cog_shell_get_web_view(launcher->shell), NULL, (GAsyncReadyCallback) resume_frozen_callback, NULL);
+ }
+ 
+ static gboolean
+@@ -1054,6 +1076,12 @@ cog_launcher_constructed(GObject *object)
+     cog_launcher_add_action(launcher, "previous", on_action_prev, NULL);
+     cog_launcher_add_action(launcher, "next", on_action_next, NULL);
+     cog_launcher_add_action(launcher, "reload", on_action_reload, NULL);
++    cog_launcher_add_action(launcher, "hide", on_action_hide, NULL);
++    cog_launcher_add_action(launcher, "show", on_action_show, NULL);
++    cog_launcher_add_action(launcher, "freeze", on_action_freeze, NULL);
++    cog_launcher_add_action(launcher, "resume_frozen", on_action_resume_frozen, NULL);
++    cog_launcher_add_action(launcher, "suspend", on_action_suspend, NULL);
++    cog_launcher_add_action(launcher, "resume", on_action_resume, NULL);
+     cog_launcher_add_action(launcher, "open", on_action_open, G_VARIANT_TYPE_STRING);
+ 
+     g_application_add_main_option_entries(G_APPLICATION(object), s_cli_options);
+diff --git a/launcher/cogctl.c b/launcher/cogctl.c
+index b7daa15e..e65dd747 100644
+--- a/launcher/cogctl.c
++++ b/launcher/cogctl.c
+@@ -304,6 +304,36 @@ cmd_find_by_name (const char *name)
+             .desc = "Reload the current page",
+             .handler = cmd_generic_no_args,
+         },
++        {
++            .name = "freeze",
++            .desc = "Call freeze Lifecycle API",
++            .handler = cmd_generic_no_args,
++        },
++        {
++            .name = "resume_frozen",
++            .desc = "Call resume frozen Lifecycle API",
++            .handler = cmd_generic_no_args,
++        },
++        {
++            .name = "suspend",
++            .desc = "Call suspend",
++            .handler = cmd_generic_no_args,
++        },
++        {
++            .name = "resume",
++            .desc = "Call resume",
++            .handler = cmd_generic_no_args,
++        },
++        {
++            .name = "hide",
++            .desc = "Call hide Lifecycle API",
++            .handler = cmd_generic_no_args,
++        },
++        {
++            .name = "show",
++            .desc = "Call show Lifecycle API",
++            .handler = cmd_generic_no_args,
++        },
+         {
+             .name = NULL,
+         },
