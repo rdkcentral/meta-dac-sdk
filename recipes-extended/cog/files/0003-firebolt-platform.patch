@@ -1,0 +1,443 @@
+Index: cog-0.16.1/platform/firebolt/cog-platform-firebolt.cpp
+===================================================================
+--- /dev/null
++++ cog-0.16.1/platform/firebolt/cog-platform-firebolt.cpp
+@@ -0,0 +1,114 @@
++/*
++ * cog-platform-firebolt.cpp
++ * Copyright (C) 2025 Metrological
++ *
++ * Distributed under terms of the MIT license.
++ */
++
++#include <glib.h>
++#include "../../core/cog.h"
++#include "wpe/webkit.h"
++#include "cog-firebolt-lifecycle.h"
++
++struct _CogFireboltPlatformClass {
++    CogPlatformClass parent_class;
++};
++
++struct _CogFireboltPlatform {
++    CogPlatform parent;
++};
++
++
++extern "C" {
++G_DECLARE_FINAL_TYPE(CogFireboltPlatform, cog_firebolt_platform, COG, HEADLESS_PLATFORM, CogPlatform)
++
++G_DEFINE_DYNAMIC_TYPE_EXTENDED(
++    CogFireboltPlatform,
++    cog_firebolt_platform,
++    COG_TYPE_PLATFORM,
++    0,
++    g_io_extension_point_implement(COG_MODULES_PLATFORM_EXTENSION_POINT, g_define_type_id, "firebolt", 100);)
++}
++
++static void
++cog_firebolt_platform_finalize(GObject *object)
++{
++    G_OBJECT_CLASS(cog_firebolt_platform_parent_class)->finalize(object);
++}
++
++static gboolean
++cog_firebolt_platform_is_supported()
++{
++    return TRUE;
++}
++
++static gboolean
++cog_firebolt_platform_setup(CogPlatform *platform G_GNUC_UNUSED, CogShell *shell G_GNUC_UNUSED, const char *params G_GNUC_UNUSED, GError **error G_GNUC_UNUSED)
++{
++    return ICogFirebolt::Instance().isConnected() ? TRUE : FALSE;
++}
++
++static WebKitWebViewBackend*
++cog_firebolt_platform_get_view_backend(CogPlatform *platform G_GNUC_UNUSED, WebKitWebView *related_view G_GNUC_UNUSED, GError **error G_GNUC_UNUSED)
++{
++    g_info("BUNIO: get view backend");
++    WebKitWebViewBackend *wvb = webkit_web_view_backend_new(wpe_view_backend_create(), NULL, NULL);
++    g_info("BUNIO: get view backend %p",wvb);
++    return wvb;
++}
++
++static void
++cog_firebolt_platform_init_web_view(CogPlatform *platform G_GNUC_UNUSED, WebKitWebView *view G_GNUC_UNUSED)
++{
++    g_info("BUNIO: init view backend %p, %p",platform,view);
++    ICogFirebolt::Instance().createLifecycle(view);
++}
++
++// struct _CogPlatformClass {
++//     GObjectClass parent_class;
++
++//     /*< public >*/
++//     gboolean (*is_supported)(void);
++//     gboolean (*setup)(CogPlatform *, CogShell *shell, const char *params, GError **);
++//     WebKitWebViewBackend *(*get_view_backend)(CogPlatform *, WebKitWebView *related_view, GError **);
++//     void (*init_web_view)(CogPlatform *, WebKitWebView *);
++//     WebKitInputMethodContext *(*create_im_context)(CogPlatform *);
++// };
++
++extern "C" {
++static void
++cog_firebolt_platform_class_init(CogFireboltPlatformClass* klass)
++{
++    GObjectClass* object_class = G_OBJECT_CLASS(klass);
++    object_class->finalize              = cog_firebolt_platform_finalize;
++
++    CogPlatformClass* platform_class = COG_PLATFORM_CLASS(klass);
++    platform_class->is_supported        = cog_firebolt_platform_is_supported;
++    platform_class->setup               = cog_firebolt_platform_setup;
++    platform_class->get_view_backend    = cog_firebolt_platform_get_view_backend;
++    platform_class->init_web_view       = cog_firebolt_platform_init_web_view;
++    platform_class->create_im_context   = NULL;
++}
++
++static void
++cog_firebolt_platform_class_finalize(CogFireboltPlatformClass* klass G_GNUC_UNUSED)
++{
++}
++
++static void
++cog_firebolt_platform_init(CogFireboltPlatform* self)
++{
++}
++
++G_MODULE_EXPORT void
++g_io_cogplatform_firebolt_load(GIOModule* module)
++{
++    GTypeModule* type_module = G_TYPE_MODULE(module);
++    cog_firebolt_platform_register_type(type_module);
++}
++
++G_MODULE_EXPORT void
++g_io_cogplatform_firebolt_unload(GIOModule* module G_GNUC_UNUSED)
++{
++}
++}
+\ No newline at end of file
+Index: cog-0.16.1/platform/firebolt/meson.build
+===================================================================
+--- /dev/null
++++ cog-0.16.1/platform/firebolt/meson.build
+@@ -0,0 +1,17 @@
++add_languages('cpp')
++
++firebolt_platform_plugin = shared_module('cogplatform-firebolt',
++    'cog-platform-firebolt.cpp',
++    'cog-firebolt-lifecycle.cpp',
++    cpp_args: [
++        '-DG_LOG_DOMAIN="Cog-Firebolt"',
++    ],
++    dependencies: [
++        cogcore_dep,
++        dependency('FireboltSDK')
++    ],
++    gnu_symbol_visibility: 'hidden',
++    install_dir: plugin_path,
++    install: true,
++)
++platform_plugin_targets += [firebolt_platform_plugin]
+Index: cog-0.16.1/platform/meson.build
+===================================================================
+--- cog-0.16.1.orig/platform/meson.build
++++ cog-0.16.1/platform/meson.build
+@@ -1,4 +1,12 @@
+-wpebackend_fdo_dep = dependency('wpebackend-fdo-1.0', version: '>=1.8.0')
++wpebackend_fdo_dep = ''
++
++# Check whether any of the chosen platform plug-ins needs the wpebackend-fdo dependency.
++foreach platform_plugin_name : ['drm', 'x11', 'gtk4', 'headless', 'wayland']
++    if platform_plugins.contains(platform_plugin_name)
++        wpebackend_fdo_dep = dependency('wpebackend-fdo-1.0', version: '>=1.8.0')
++        break
++    endif
++endforeach
+ 
+ # Check whether any of the chosen platform plug-ins needs the common library.
+ foreach platform_plugin_name : ['drm', 'x11', 'gtk4']
+Index: cog-0.16.1/meson.build
+===================================================================
+--- cog-0.16.1.orig/meson.build
++++ cog-0.16.1/meson.build
+@@ -4,6 +4,7 @@ project('cog', 'c',
+         'buildtype=debugoptimized',
+         'b_ndebug=if-release',
+         'c_std=c99',
++        'cpp_std=c++17'
+     ],
+     license: 'MIT',
+     version: '0.16.1',
+@@ -76,6 +77,7 @@ with_headless_platform = platform_plugin
+ with_wayland_platform = platform_plugins.contains('wayland')
+ with_gtk4_platform = platform_plugins.contains('gtk4')
+ with_x11_platform = platform_plugins.contains('x11')
++with_firebolt_platform = platform_plugins.contains('firebolt')
+ 
+ with_programs = get_option('programs')
+ 
+@@ -103,6 +105,8 @@ cog_launcher_home_uri = get_option('cog_
+ cog_launcher_system_bus = with_programs and get_option('cog_dbus_control') == 'system'
+ 
+ add_project_arguments('-DCOG_INSIDE_COG__=1', language: 'c')
++add_project_arguments('-DG_ENABLE_DEBUG=1', language: 'c')
++add_project_arguments('-DG_ENABLE_DEBUG=1', language: 'cpp')
+ 
+ if with_soup2
+     add_project_arguments('-DCOG_USE_SOUP2=1', language: 'c')
+Index: cog-0.16.1/meson_options.txt
+===================================================================
+--- cog-0.16.1.orig/meson_options.txt
++++ cog-0.16.1/meson_options.txt
+@@ -7,7 +7,7 @@ option(
+     'platforms',
+     type: 'array',
+     value: ['drm', 'headless', 'wayland'],
+-    choices: ['drm', 'headless', 'wayland', 'gtk4', 'x11'],
++    choices: ['drm', 'headless', 'wayland', 'gtk4', 'x11', 'firebolt'],
+     description: 'platform plug-ins to build'
+ )
+ option(
+Index: cog-0.16.1/core/cog.h
+===================================================================
+--- cog-0.16.1.orig/core/cog.h
++++ cog-0.16.1/core/cog.h
+@@ -24,6 +24,17 @@
+ #include "cog-utils.h"
+ #include "cog-webkit-utils.h"
+ 
++#include <stdio.h>
++
++#define g_log(domain, level, ...)                                       \
++({                                                                      \
++    char _buf[256];                                                     \
++    int _len = 0;                                                       \
++    _len += snprintf(_buf,sizeof(_buf)-_len,"[%s:%d] ",domain,level);   \
++    _len += snprintf(_buf,sizeof(_buf)-_len,__VA_ARGS__);               \
++    fprintf(stderr,"%s\n",_buf);                                        \
++})
++
+ #undef COG_INSIDE_COG__
+ 
+ #endif /* !COG_H */
+Index: cog-0.16.1/platform/firebolt/cog-firebolt-lifecycle.cpp
+===================================================================
+--- /dev/null
++++ cog-0.16.1/platform/firebolt/cog-firebolt-lifecycle.cpp
+@@ -0,0 +1,193 @@
++#include "cog-firebolt-lifecycle.h"
++#include <condition_variable>
++#include <mutex>
++#include <glib.h>
++#include "../../core/cog.h"
++#include "wpe/webkit.h"
++#include "FireboltSDK/firebolt.h"
++
++class CogFireboltLifecycle
++{
++    public:
++        CogFireboltLifecycle(WebKitWebView *view);
++        virtual ~CogFireboltLifecycle();
++
++    private:
++        static void         on_close(WebKitWebView *view, CogFireboltLifecycle *cfl);
++        static void         on_notify(WebKitWebView *view, GParamSpec *pspec, CogFireboltLifecycle *cfl);
++        static void         on_message(WebKitWebView *view, WebKitUserMessage *message, CogFireboltLifecycle *cfl);
++
++    private:
++        WebKitWebView      *view;
++};
++
++CogFireboltLifecycle::CogFireboltLifecycle(WebKitWebView *view) :
++    view(view)
++{
++    g_object_ref_sink(view);
++    g_signal_connect(view, "close", G_CALLBACK(on_close), this);
++    g_signal_connect(view, "notify", G_CALLBACK(on_notify), this);
++    g_signal_connect(view, "user-message-received", G_CALLBACK(on_message), this);
++    {
++        GType type = G_TYPE_FROM_INSTANCE(view);
++        guint *signal_ids;
++        guint n_ids;
++        signal_ids = g_signal_list_ids(type, &n_ids);
++
++        g_print("Signal IDs for %s:\n",g_type_name(type));
++        for (guint i = 0; i < n_ids; i++) {
++            guint signal_id = signal_ids[i];
++            GSignalQuery query;
++            g_signal_query(signal_id, &query);
++
++            g_print("  Signal ID: %u, Name: %s\n", signal_id, query.signal_name);
++        }
++
++        g_free(signal_ids);
++    }
++
++    Firebolt::Lifecycle::ILifecycle &lifecycle = Firebolt::IFireboltAccessor::Instance().LifecycleInterface();
++    lifecycle.subscribeOnBackgroundChanged([](const Firebolt::Lifecycle::LifecycleEvent &event) {
++        g_info("BUNIO:%4d:lifecycle / background %d => %d",__LINE__,event.previous,event.state);
++    });
++    lifecycle.subscribeOnForegroundChanged([](const Firebolt::Lifecycle::LifecycleEvent &event) {
++        g_info("BUNIO:%4d:lifecycle / foreground %d => %d",__LINE__,event.previous,event.state);
++    });
++    lifecycle.subscribeOnInactiveChanged([](const Firebolt::Lifecycle::LifecycleEvent &event) {
++        g_info("BUNIO:%4d:lifecycle / inactive %d => %d",__LINE__,event.previous,event.state);
++    });
++    lifecycle.subscribeOnSuspendedChanged([](const Firebolt::Lifecycle::LifecycleEvent &event) {
++        g_info("BUNIO:%4d:lifecycle / suspended %d => %d",__LINE__,event.previous,event.state);
++    });
++    lifecycle.subscribeOnUnloadingChanged([](const Firebolt::Lifecycle::LifecycleEvent &event) {
++        g_info("BUNIO:%4d:lifecycle / onunloading %d => %d",__LINE__,event.previous,event.state);
++    });
++}
++
++CogFireboltLifecycle::~CogFireboltLifecycle()
++{
++    g_object_unref(view);
++}
++
++void CogFireboltLifecycle::on_close(WebKitWebView *, CogFireboltLifecycle *cfl)
++{
++    delete cfl;
++}
++
++void CogFireboltLifecycle::on_notify(WebKitWebView*, GParamSpec* pspec, CogFireboltLifecycle *)
++{
++    g_info("BUNIO:%4d:on_notify \"%s\"",__LINE__,g_param_spec_get_name(pspec));
++}
++
++void CogFireboltLifecycle::on_message(WebKitWebView*, WebKitUserMessage* message, CogFireboltLifecycle *)
++{
++    g_info("BUNIO:%4d:on_message \"%s\"",__LINE__,webkit_user_message_get_name(message));
++}
++
++// ------------------------------------------------------------------------------------------------------------------------------------------------
++
++class CogFirebolt : public ICogFirebolt
++{
++    public:
++        CogFirebolt();
++
++        virtual bool                            createLifecycle(WebKitWebView *view);
++        virtual bool                            isConnected();
++
++    private:
++        bool                                    connect();
++
++    private:
++        std::mutex                              mutex{};
++        std::condition_variable                 cond;
++        bool                                    connected{false};
++        std::unique_ptr<CogFireboltLifecycle>   lifecycle;
++};
++
++CogFirebolt::CogFirebolt()
++{
++    std::srand(std::time({}));
++    connect();
++}
++
++bool CogFirebolt::isConnected()
++{
++    std::unique_lock<std::mutex> lock(mutex);
++    return connected;
++}
++
++static const std::string uriCustomize(const std::string &base, const std::string &appId = "com.rdk.wpe")
++{
++    char buf[256] = { 0 };
++    std::string host = base.substr(0, base.find('?'));
++    snprintf(buf, sizeof(buf), "%s?appId=%s&session=%u-%u", host.c_str(), appId.c_str(), std::time({}), std::rand());
++    return std::string(buf);
++}
++
++static inline const char *fallbackString(const char *env, const char *fallback)
++{
++    return ( env && *env ) ? env : fallback;
++}
++
++bool CogFirebolt::connect()
++{
++    g_info("BUNIO:%4d: firebolt connect",__LINE__);
++    std::unique_lock<std::mutex> lock(mutex);
++    std::string url = uriCustomize(fallbackString(std::getenv("FIREBOLT_ENDPOINT"), "ws://localhost:3474"));
++    const std::string config = "{\
++        \"waitTime\": 1000,\
++        \"logLevel\": \"Debug\",\
++        \"workerPool\":{\
++            \"queueSize\": 8,\
++            \"threadCount\": 3\
++        },\
++        \"wsUrl\": \"" + url + "\"\
++    }";
++    g_info("BUNIO:%4d: firebolt initialize",__LINE__);
++    Firebolt::Error fbError = Firebolt::IFireboltAccessor::Instance().Initialize(config);
++    if (Firebolt::Error::None != fbError)
++    {
++        g_info("BUNIO:%4d: firebolt initialize fail",__LINE__);
++        return false;
++    }
++    g_info("BUNIO:%4d: firebolt connect, %s",__LINE__,url.c_str());
++    fbError = Firebolt::IFireboltAccessor::Instance().Connect([this](const bool _connected, const Firebolt::Error _error){
++        g_info("BUNIO:%4d: firebolt connect state change %d %d",__LINE__,connected,_error);
++        std::unique_lock<std::mutex> lock(mutex);
++        connected = _connected;
++        cond.notify_one();
++        g_info("BUNIO:%4d: firebolt connect state change done",__LINE__);
++    });
++    if (Firebolt::Error::None != fbError)
++    {
++        return false;
++    }
++    g_info("BUNIO:%4d: firebolt connect wait",__LINE__);
++    if (!cond.wait_for(lock, std::chrono::seconds{1}, [this]() { return connected; }))
++    {
++        g_info("BUNIO:%4d: firebolt connect fail %d",__LINE__,connected);
++        return false;
++    }
++    g_info("BUNIO:%4d: firebolt connect success",__LINE__);
++    return true;
++}
++
++bool CogFirebolt::createLifecycle(WebKitWebView *view)
++{
++    std::unique_lock<std::mutex> lock(mutex);
++    if (connected)
++    {
++        if (!lifecycle)
++        {
++            lifecycle = std::make_unique<CogFireboltLifecycle>(view);
++        }
++    }
++    return lifecycle != nullptr;
++}
++
++ICogFirebolt &ICogFirebolt::Instance()
++{
++    static CogFirebolt instance;
++    return instance;
++}
++
+Index: cog-0.16.1/platform/firebolt/cog-firebolt-lifecycle.h
+===================================================================
+--- /dev/null
++++ cog-0.16.1/platform/firebolt/cog-firebolt-lifecycle.h
+@@ -0,0 +1,15 @@
++#ifndef __COG_FIREBOLT_LIFECYCLE_H__
++#define __COG_FIREBOLT_LIFECYCLE_H__
++
++typedef struct _WebKitWebView WebKitWebView;
++
++class ICogFirebolt
++{
++    public:
++        static ICogFirebolt    &Instance();
++
++        virtual bool            createLifecycle(WebKitWebView *view) = 0;
++        virtual bool            isConnected() = 0;
++};
++
++#endif /*__COG_FIREBOLT_LIFECYCLE_H__*/
+\ No newline at end of file
