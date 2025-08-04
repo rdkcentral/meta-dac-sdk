@@ -6,4 +6,4 @@ RDEPENDS_${PN} += "gstreamer1.0-plugins-base-typefindfunctions"
 RDEPENDS_${PN} += "gstreamer1.0-plugins-good-autodetect"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-SRC_URI += "file://0001-ocdmrialto.patch;patchdir=../starboard"
+SRC_URI += "file://0001-ocdmrialto.patch;patchdir=../larboard"

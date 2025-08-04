@@ -71,9 +71,9 @@
          revision="main"
              path="meta-rdk-flutter"/>
 
-  <project remote="cmf"
-             name="rdk/components/generic/rdk-oe/meta-rdk-video"
-         revision="rdk-next"
+  <project remote="github"
+             name="rdkcentral/meta-rdk-video"
+         revision="8cc9f62d837e29582664aa545484fc56da1c070f"
              path="meta-rdk-video"/>
 
   <project remote="cmf"
