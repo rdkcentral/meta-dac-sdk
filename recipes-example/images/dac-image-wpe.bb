@@ -8,6 +8,7 @@ IMAGE_INSTALL += "liberation-fonts"
 
 OCI_IMAGE_ENTRYPOINT = "/usr/bin/cog"
 OCI_IMAGE_ENTRYPOINT_ARGS = "https://ytlr-cert.appspot.com/2021/main.html"
+OCI_IMAGE_ENTRYPOINT_ARGS .= "\\@\\--enable-encrypted-media=1\\@\\--set-permissions=all"
 
 OCI_IMAGE_ENV_VARS += "WEBKIT_GST_QUIRKS=rialto"
 OCI_IMAGE_ENV_VARS += "WEBKIT_GST_HOLE_PUNCH_QUIRK=rialto"
