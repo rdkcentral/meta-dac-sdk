@@ -20,5 +20,16 @@
         "ram": "512M"
     },
     "features": [],
-    "mounts": []
+    "mounts": [
+        {
+            "source": "/var/run/dbus/system_bus_socket",
+            "destination": "/var/run/dbus/system_bus_socket",
+            "type": "bind",
+            "options": [
+                "rbind",
+                "rw",
+                "X-dobby.optional"
+            ]
+        }
+    ]
 }
