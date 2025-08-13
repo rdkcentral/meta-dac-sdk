@@ -1,7 +1,8 @@
 RDEPENDS_${PN}_remove_rpi = "userland"
+RDEPENDS_${PN} = "thunderhangrecovery"
 
 DEPENDS_remove = "breakpad-wrapper"
-DEPENDS_remove = "rfc"
+DEPENDS_remove = "rfc thunderhangrecovery"
 
 DEPENDS += "curl"
 PACKAGECONFIG_remove = " sdnotify"
