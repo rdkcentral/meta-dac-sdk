@@ -1,5 +1,5 @@
 require cobalt_dac.inc
-SRC_URI += "file://0002-remove-rfc-api-24.patch;patchdir=${WORKDIR}/starboard"
+SRC_URI += "file://0002-remove-rfc-api-24.patch;patchdir=../larboard"
 
 # DAC sdk uses DISTRO poky which uses meta/conf/distro/include/security_flags.inc and not the
 # security flags from RDK: meta-rdk/conf/distro/include/rdk_security_flags.inc

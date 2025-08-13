@@ -19,14 +19,14 @@
 
   <project remote="github"
              name="yoctoproject/poky"
-         revision="f980ef9fec58217b4b743c0ee103d5957894676a"
+         revision="63d05fc061006bf1a88630d6d91cdc76ea33fbf2"
          upstream="dunfell"
              path="."/>
 
   <project remote="oe-org"
              name="meta-openembedded"
          upstream="dunfell"
-         revision="ca35402be56745e5664394b8ec18d7e2a3b353d1"
+         revision="01358b6d705071cc0ac5aefa7670ab235709729a"
              path="meta-openembedded"/>
 
   <project remote="yocto"
@@ -41,7 +41,7 @@
 
   <project remote="oe-org"
              name="meta-python2"
-        revision="dunfell"
+         revision="dunfell"
             path="meta-python2"/>
 
   <project remote="github"
@@ -51,7 +51,7 @@
 
   <project remote="github"
              name="kraj/meta-clang"
-         revision="8acc0b9c2a3942077d43f0baefc2841cc993fae1"
+         revision="e8a5e806b48a36046ef78a95f4d4cd428e8ea4c2"
          upstream="dunfell-clang12"
              path="meta-clang"/>
 
@@ -71,37 +71,9 @@
          revision="main"
              path="meta-rdk-flutter"/>
 
-  <project remote="cmf"
-             name="rdk/components/generic/rdk-oe/meta-rdk-video"
-         revision="rdk-next"
+  <project remote="github"
+             name="rdkcentral/meta-rdk-video"
+         revision="8cc9f62d837e29582664aa545484fc56da1c070f"
              path="meta-rdk-video"/>
-
-  <project remote="cmf"
-             name="rdk/components/generic/rdk-oe/meta-cmf"
-         revision="rdk-next"
-             path="meta-cmf">
-    <annotation name="MANIFEST_EXPORT_PATH" value="MANIFEST_PATH_CMF"/>
-  </project>
-
-  <project remote="cmf"
-             name="rdk/components/generic/rdk-oe/meta-rdk"
-         revision="rdk-next"
-             path="meta-rdk">
-    <annotation name="MANIFEST_EXPORT_PATH" value="MANIFEST_PATH_RDK"/>
-  </project>
-
-  <project remote="cmf"
-             name="rdk/components/generic/rdk-oe/meta-rdk-ext"
-         revision="rdk-next"
-             path="meta-rdk-ext">
-    <annotation name="MANIFEST_EXPORT_PATH" value="MANIFEST_PATH_RDK_EXT"/>
-  </project>
-
-  <project remote="cmf"
-             name="rdk/components/generic/rdk-oe/meta-rdk-cobalt"
-         revision="rdk-next"
-             path="meta-rdk-cobalt">
-    <annotation name="MANIFEST_EXPORT_PATH" value="MANIFEST_PATH_RDK_COBALT"/>
-   </project>
 
 </manifest>
