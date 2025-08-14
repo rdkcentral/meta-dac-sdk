@@ -41,5 +41,5 @@ do_install() {
   install -p -m 0755 -D ${S}/${INPUT_NAME_EPOXY}  ${D}${bindir}/${INPUT_NAME_EPOXY}
 }
 
-FILES_${PN} += "${bindir}/*"
+FILES:${PN} += "${bindir}/*"
 

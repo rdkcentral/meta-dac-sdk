@@ -64,7 +64,7 @@ DEPENDS          = "python3-native"
 
 PROVIDES         = "${@bb.utils.contains('DISTRO_FEATURES', 'libglvnd-as-stubs-provider', '', \
                        'virtual/mesa virtual/egl virtual/libgl virtual/libgles1 virtual/libgles2', d)}"
-RPROVIDES_${PN}  = "${@bb.utils.contains('DISTRO_FEATURES', 'libglvnd-as-stubs-provider', '', \
+RPROVIDES:${PN}  = "${@bb.utils.contains('DISTRO_FEATURES', 'libglvnd-as-stubs-provider', '', \
                        'mesa egl libgl libgles1 libgles2', d)}"
 
 BBCLASSEXTEND    = "native"
@@ -117,10 +117,10 @@ do_install:append() {
 }
 
 # On stubs_only mode we do not install any files
-FILES_${PN}            = "${@bb.utils.contains('DISTRO_FEATURES', 'libglvnd-as-stubs-provider', \
+FILES:${PN}            = "${@bb.utils.contains('DISTRO_FEATURES', 'libglvnd-as-stubs-provider', \
                          '', '${libdir}/*.so.*', d)}"
-FILES_${PN}-dev        = "${@bb.utils.contains('DISTRO_FEATURES', 'libglvnd-as-stubs-provider', \
+FILES:${PN}-dev        = "${@bb.utils.contains('DISTRO_FEATURES', 'libglvnd-as-stubs-provider', \
                          '', '${includedir} ${libdir}/pkgconfig ${libdir}/*.so', d)}"
 
-INSANE_SKIP_${PN}     += "${@bb.utils.contains('DISTRO_FEATURES', 'libglvnd-as-stubs-provider', \
+INSANE_SKIP:${PN}     += "${@bb.utils.contains('DISTRO_FEATURES', 'libglvnd-as-stubs-provider', \
                          'installed-vs-shipped', '', d)}"

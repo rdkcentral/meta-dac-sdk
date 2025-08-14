@@ -41,7 +41,7 @@ do_install() {
     install ${S}/umoci ${D}/${sbindir}
 }
 
-INSANE_SKIP_${PN} += "ldflags already-stripped"
+INSANE_SKIP:${PN} += "ldflags already-stripped"
 BBCLASSEXTEND = "native nativesdk"
 
-FILES_${PN} += "${datadir}/umoci*"
+FILES:${PN} += "${datadir}/umoci*"

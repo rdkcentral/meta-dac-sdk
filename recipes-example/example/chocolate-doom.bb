@@ -25,4 +25,4 @@ do_install:append() {
     install -m 0644 ${WORKDIR}/doom1.wad ${D}${datadir}
 }
 
-FILES_${PN} += "${datadir}/*"
+FILES:${PN} += "${datadir}/*"
