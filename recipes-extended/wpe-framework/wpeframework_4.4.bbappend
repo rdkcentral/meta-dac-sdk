@@ -1,11 +1,11 @@
-RDEPENDS_${PN}_remove_rpi = "userland"
-RDEPENDS_${PN} = "thunderhangrecovery"
+RDEPENDS:${PN}:remove:rpi = "userland"
+RDEPENDS:${PN} = "thunderhangrecovery"
 
-DEPENDS_remove = "breakpad-wrapper"
-DEPENDS_remove = "rfc thunderhangrecovery"
+DEPENDS:remove = "breakpad-wrapper"
+DEPENDS:remove = "rfc thunderhangrecovery"
 
 DEPENDS += "curl"
-PACKAGECONFIG_remove = " sdnotify"
+PACKAGECONFIG:remove = " sdnotify"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += "file://0001-remove-deps-4.2.patch"

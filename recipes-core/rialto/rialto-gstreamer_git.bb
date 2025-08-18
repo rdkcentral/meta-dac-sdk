@@ -10,4 +10,4 @@ DEPENDS = "glib-2.0 gstreamer1.0 gstreamer1.0-plugins-base wpeframework-clientli
 S = "${WORKDIR}/git"
 inherit cmake coverity
 
-FILES_${PN} += "${libdir}/gstreamer-1.0/libgstrialtosinks.so"
+FILES:${PN} += "${libdir}/gstreamer-1.0/libgstrialtosinks.so"

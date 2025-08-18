@@ -7,14 +7,14 @@ REQUIRED_DISTRO_FEATURES += "igalia-wpe"
 # TODO: inherit also gstreamer class when it will be ready
 inherit dac-image-wayland
 
-TOOLCHAIN_pn-wpewebkit = "clang"
-RUNTIME_pn-wpewebkit = "llvm"
-TOOLCHAIN_pn-wpewebkit-rdk = "clang"
-RUNTIME_pn-wpewebkit-rdk = "llvm"
-TOOLCHAIN_pn-cog = "clang"
-RUNTIME_pn-cog = "llvm"
+TOOLCHAIN:pn-wpewebkit = "clang"
+RUNTIME:pn-wpewebkit = "llvm"
+TOOLCHAIN:pn-wpewebkit-rdk = "clang"
+RUNTIME:pn-wpewebkit-rdk = "llvm"
+TOOLCHAIN:pn-cog = "clang"
+RUNTIME:pn-cog = "llvm"
 
-PACKAGECONFIG_pn-weston-cog = "weston-direct-display"
+PACKAGECONFIG:pn-weston-cog = "weston-direct-display"
 
 IMAGE_INSTALL = "cog"
 

@@ -18,12 +18,12 @@ PACKAGECONFIG[servermanager-sim] = "-DENABLE_SERVER_MANAGER=ON,-DENABLE_SERVER_M
 
 PACKAGECONFIG ??= "server servermanager-sim"
 
-FILES_${PN}-client += "${libdir}/libRialtoClient.so.*"
-FILES_${PN}-server += "${bindir}/RialtoServer"
-RDEPENDS_${PN}-server += "rdk-gstreamer-utils"
-FILES_${PN}-servermanager-sim += "${bindir}/RialtoServerManagerSim"
-FILES_${PN}-servermanager-lib += "${libdir}/libRialtoServerManager.so.*"
-RDEPENDS_${PN}-servermanager-lib += "${PN}-server"
+FILES:${PN}-client += "${libdir}/libRialtoClient.so.*"
+FILES:${PN}-server += "${bindir}/RialtoServer"
+RDEPENDS:${PN}-server += "rdk-gstreamer-utils"
+FILES:${PN}-servermanager-sim += "${bindir}/RialtoServerManagerSim"
+FILES:${PN}-servermanager-lib += "${libdir}/libRialtoServerManager.so.*"
+RDEPENDS:${PN}-servermanager-lib += "${PN}-server"
 
 # Enable the correct logging compile flag for the image build
 # Debug will include all logging, Release includes only fatal, error, warning and milestones

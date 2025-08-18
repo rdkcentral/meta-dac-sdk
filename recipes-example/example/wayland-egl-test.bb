@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://UNLICENSE;md5=7246f848faa4e9c9fc0ea91122d6e680"
 
 DEPENDS =  "virtual/egl virtual/libgles2 libepoxy libxkbcommon"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 S = "${WORKDIR}/git/wayland-egl-test"
 
@@ -41,5 +41,5 @@ do_install() {
   install -p -m 0755 -D ${S}/${INPUT_NAME_EPOXY}  ${D}${bindir}/${INPUT_NAME_EPOXY}
 }
 
-FILES_${PN} += "${bindir}/*"
+FILES:${PN} += "${bindir}/*"
 

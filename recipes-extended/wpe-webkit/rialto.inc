@@ -4,7 +4,7 @@ DEPENDS:remove = "wpeframework-clientlibraries"
 DEPENDS:remove = "westeros"
 DEPENDS:remove = "westeros-sink"
 
-RDEPENDS_${PN} += "rialto-gstreamer"
+RDEPENDS:${PN} += "rialto-gstreamer"
 
 PACKAGECONFIG += "wpeframework_opencdm"
 PACKAGECONFIG += "westeros"

@@ -27,5 +27,5 @@ do_install() {
   install -p -m 0755 -D ${S}/${TEST_NAME}         ${D}${bindir}/${TEST_NAME}
 }
 
-FILES_${PN} += "${bindir}/*"
+FILES:${PN} += "${bindir}/*"
 

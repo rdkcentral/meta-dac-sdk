@@ -29,6 +29,6 @@ do_install() {
   install -p -m 0755 -D ${S}/resources/1.level         ${D}${datadir}/resources/1.level
 }
 
-FILES_${PN} += "${bindir}/*"
-FILES_${PN} += "${datadir}/*"
+FILES:${PN} += "${bindir}/*"
+FILES:${PN} += "${datadir}/*"
 

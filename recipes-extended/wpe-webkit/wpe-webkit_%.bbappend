@@ -1,6 +1,6 @@
 WPE_BACKEND = ""
 
-PACKAGECONFIG_remove = "accessibility"
-PACKAGECONFIG_remove = "speechsynthesis"
+PACKAGECONFIG:remove = "accessibility"
+PACKAGECONFIG:remove = "speechsynthesis"
 
 require ${@bb.utils.contains('DISTRO_FEATURES', 'enable_rialto', 'rialto.inc', '', d)}

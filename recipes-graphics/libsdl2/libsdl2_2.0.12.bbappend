@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI += "file://0001-add-possibility-to-preload-egl-functions.patch"
 SRC_URI += "https://git.sailfishos.org/mer-core/libsdl/raw/7752273b154ffb11fc65a31deca1bd75d1b213ee/rpm/sdl2-wayland-input-fix.patch;apply=yes;name=wayland_patch"

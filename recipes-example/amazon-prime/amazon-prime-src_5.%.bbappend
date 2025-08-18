@@ -6,12 +6,12 @@ SRC_URI[avpk.sha256sum] = "4b2de678951961faba2bb115943ef0948a2e605e5893e7d0c7e7a
 
 S = "${WORKDIR}/amazon-prime-src-5.0/amazonvideoportingkit/ignition/"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += "file://0002-fix-iv.patch;patchdir=../../../git/rdk-linux-device-layer/implementation"
 SRC_URI += "file://0003-ocdm-rialto.patch;patchdir=../../../git/rdk-linux-device-layer/implementation"
 
 DEPENDS += "openssl c-ares nodejs-native caps wpeframework-ocdm-headers rialto-ocdm"
-RDEPENDS_${PN} += "rdk-gstreamer-utils rialto-ocdm"
+RDEPENDS:${PN} += "rdk-gstreamer-utils rialto-ocdm"
 
 # appbootstrap is not delivered in tarball anymore so we need to generate
 EXTRA_OECMAKE += " -DUSE_PRE_GENERATED_SOURCES=OFF"
@@ -25,4 +25,4 @@ addtask unpack_delete_git after do_unpack before do_patch
 LDFLAGS_remove = "-lcap"
 
 # TODO: check why this is failing
-INSANE_SKIP_${PN} += "installed-vs-shipped"
+INSANE_SKIP:${PN} += "installed-vs-shipped"
