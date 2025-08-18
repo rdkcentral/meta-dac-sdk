@@ -1,9 +1,14 @@
+LIC_FILES_CHKSUM = "file://LICENSE;md5=175792518e4ac015ab6696d16c4f607e"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-SRC_URI_remove = "${RDK_GENERIC_ROOT_GIT}/gstreamer-netflix-platform/generic;protocol=${RDK_GIT_PROTOCOL};branch=${RDK_GIT_BRANCH}"
+SRC_URI:remove = "${RDK_GENERIC_ROOT_GIT}/gstreamer-netflix-platform/generic;protocol=${RDK_GIT_PROTOCOL};branch=${RDK_GIT_BRANCH}"
+SRC_URI:remove = "${CMF_GITHUB_ROOT}/gstreamer-netflix-platform;${CMF_GITHUB_SRC_URI_SUFFIX}"
+
 SRC_URI += "${CMF_GIT_ROOT}/rdk/components/opensource/gstreamer-direct-platform;protocol=${CMF_GIT_PROTOCOL};branch=${CMF_GIT_BRANCH}"
+SRCREV ?= "${AUTOREV}"
 
 RDEPENDS_${PN} += "rialto-gstreamer"
+DEPENDS:remove= "virtual/vendor-audio-service "
 
 SRC_URI += "file://0012-add-rialto.patch;patchdir=${WORKDIR}/git"
 EXTRA_OEMAKE+= "PLATFORM_SOC=RIALTO"
