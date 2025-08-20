@@ -12,3 +12,5 @@ RDEPENDS:${PN}-servermanager-lib:remove= "virtual/vendor-rdk-gstreamer-utils-pla
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += "file://0001-Remove-wrappers-from-compilation.patch"
+
+PV = "1.0+git${SRCPV}"

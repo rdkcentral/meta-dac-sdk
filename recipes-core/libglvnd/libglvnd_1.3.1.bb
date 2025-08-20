@@ -87,6 +87,8 @@ PACKAGECONFIG[opengl]     = ",,"
 #PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'libglvnd-as-stubs-provider', 'stubs_only', '', d)} \
 #                   asm tls ${@bb.utils.filter('DISTRO_FEATURES', 'x11', d)}"
 
+CFLAGS:append = " -Wno-array-parameter"
+
 do_install:append() {
     # If enabled, it will install only stubs (for the linking process)
     # In practise, it will only generate development (-dev) sub-package.

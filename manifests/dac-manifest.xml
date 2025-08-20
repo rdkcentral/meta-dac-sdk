@@ -19,62 +19,56 @@
 
   <project remote="github"
              name="yoctoproject/poky"
-         revision="63d05fc061006bf1a88630d6d91cdc76ea33fbf2"
-         upstream="dunfell"
+         revision="39df9602b1c0339519be81d1cba9a4a25379309a"
+         upstream="kirkstone"
              path="."/>
 
   <project remote="oe-org"
              name="meta-openembedded"
-         upstream="dunfell"
-         revision="01358b6d705071cc0ac5aefa7670ab235709729a"
+         upstream="kirkstone"
+         revision="06fc0278f10d630838d703dde707bbf0e2999873"
              path="meta-openembedded"/>
 
-<!--dunfell-->
+<!--kirkstone-->
   <project remote="yocto"
              name="meta-virtualization"
-         revision="77af3345cb99ae08b04a354b37c4afebd8b36981"
+         revision="3e4dba95e6b5f5f68d0b3a5899b106c89da59428"
              path="meta-virtualization"/>
 
-<!--dunfell-->
+<!--kirkstone-->
   <project remote="yocto"
              name="meta-raspberrypi"
-         revision="2081e1bb9a44025db7297bfd5d024977d42191ed"
+         revision="39e5dfd9cb8f11eda189d0beb62d27c83fc57e75"
              path="meta-raspberrypi"/>
 
-<!--dunfell-->
+<!--kirkstone-->
   <project remote="oe-org"
              name="meta-python2"
-        revision="b901080cf57d9a7f5476ab4d96e56c30db8170a8"
+        revision="f02882e2aa9279ca7becca8d0cedbffe88b5a253"
             path="meta-python2"/>
 
-<!--dunfell-->
+<!--kirkstone-->
   <project remote="github"
              name="meta-qt5/meta-qt5"
-         revision="5ef3a0ffd3324937252790266e2b2e64d33ef34f"
+         revision="644ebf220245bdc06e7696ccc90acc97a0dd2566"
              path="meta-qt5"/>
 
   <project remote="github"
              name="kraj/meta-clang"
-         revision="e8a5e806b48a36046ef78a95f4d4cd428e8ea4c2"
-         upstream="dunfell-clang12"
+         revision="c2e89dc7e1dfcc1bbe432afca2dc43d6560cb007"
+         upstream="kirkstone-clang12"
              path="meta-clang"/>
 
   <project remote="github"
              name="Igalia/meta-webkit"
-         revision="270599a765743c2db5a96195b7f83877cde5d499"
-         upstream="dunfell"
+         revision="b1425d0b559bb05e9f704d1db6d53fef8b5e1bdc"
+         upstream="kirkstone"
              path="meta-webkit"/>
 
   <project remote="github"
              name="rdkcentral/meta-dac-sdk"
          revision="develop"
              path="meta-dac-sdk"/>
-
-<!--main-->
-  <project remote="github"
-             name="stagingrdkm/meta-rdk-flutter"
-         revision="62faa10b5e2d56f47c4c8439b6b001cdb15847cf"
-             path="meta-rdk-flutter"/>
 
 <!--1.1.2-community tag-->
   <project remote="github"

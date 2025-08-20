@@ -13,7 +13,7 @@ S = "${WORKDIR}/git"
 DEPENDS = "jsoncpp rpcserver jansson"
 
 PACKAGECONFIG ??= ""
-PACKAGECONFIG_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'cobalt_enable_evergreen_lite', 'evergreenlite', 'libcobalt', d)}"
+PACKAGECONFIG:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'cobalt_enable_evergreen_lite', 'evergreenlite', 'libcobalt', d)}"
 
 PACKAGECONFIG[evergreenlite]  = \
     "-DWSRPC_COBALT_EVERGREEN_LITE=ON, \
@@ -27,4 +27,4 @@ do_install() {
     install -m 0755 cobalt-launcher ${D}${bindir}/
 }
 
-FILES_${PN} = "${bindir}/*"
+FILES:${PN} = "${bindir}/*"
