@@ -18,3 +18,4 @@ do_create_larboard_symlink() {
 }
 addtask do_create_larboard_symlink after do_unpack before do_patch
 
+CXXFLAGS:append = " -Wno-format-truncation"

@@ -1,5 +1,5 @@
 RDEPENDS:${PN}:remove:rpi = "userland"
-RDEPENDS:${PN} = "thunderhangrecovery"
+RDEPENDS:${PN}:remove = "thunderhangrecovery"
 
 DEPENDS:remove = "breakpad-wrapper"
 DEPENDS:remove = "rfc thunderhangrecovery"
