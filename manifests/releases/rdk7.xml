@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <remote name="rdkcentral" fetch="https://github.com/rdkcentral/"/>
+  <remote name="oe" fetch="https://git.yoctoproject.org/"/>
+
+  <project name="poky" path="." remote="rdkcentral" revision="refs/tags/rdk-4.2.0"/>
+  <project name="meta-openembedded" path="meta-openembedded" remote="rdkcentral" revision="refs/tags/rdk-4.0.0"/>
+  <project name="meta-python2" path="meta-python2" remote="rdkcentral" revision="refs/tags/rdk-4.0.0"/>
+  <project name="meta-raspberrypi" path="meta-raspberrypi" remote="oe" revision="ab5815a2ca0a460398878f77a7e39bc1a6dfe0bf" upstream="kirkstone"/>
+
+  <project name="meta-rdk-oss-reference" path="rdke/common/meta-rdk-oss-reference" remote="rdkcentral" revision="refs/tags/1.2.0"/>
+  <project name="meta-middleware-generic-support" path="rdke/middleware/generic/meta-middleware-generic-support" remote="rdkcentral" revision="refs/tags/1.1.2-community"/>
+  <project name="meta-rdk" path="rdke/middleware/generic/meta-rdk" remote="rdkcentral" revision="refs/tags/1.1.2-community"/>
+  <project name="meta-rdk-video" path="rdke/middleware/generic/meta-rdk-video" remote="rdkcentral" revision="refs/tags/1.1.2-community"/>
+</manifest>
