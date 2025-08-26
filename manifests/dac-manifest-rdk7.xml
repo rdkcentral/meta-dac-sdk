@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <remote name="yocto" fetch="https://git.yoctoproject.org/"/>
+
+  <include name="manifests/releases/rdk7.xml"/>
+
+  <project name="meta-virtualization" path="meta-virtualization" remote="yocto" upstream="kirkstone" revision="3e4dba95e6b5f5f68d0b3a5899b106c89da59428"/>
+  <project name="meta-dac-sdk" path="meta-dac-sdk" remote="rdkcentral" revision="develop"/>
+</manifest>
