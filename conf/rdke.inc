@@ -15,3 +15,4 @@ BBMASK += "/rdke/common/meta-rdk-oss-reference/recipes-graphics/wayland/"
 
 BBMASK += "/meta-dac-sdk/recipes-core/rialto/"
 BBMASK += "/meta-dac-sdk/recipes-example/netflix/rdk-gstreamer-utils.bbappend"
+BBMASK += "/meta-dac-sdk/recipes-extended/wpe-webkit/"
