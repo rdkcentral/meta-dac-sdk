@@ -1,3 +1,5 @@
+include rdk.inc
+
 DISTRO_FEATURES:append = " kirkstone"
 DISTRO_FEATURES:append = " opencdm"
 DISTRO_FEATURES:remove = "ptest"

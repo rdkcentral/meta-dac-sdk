@@ -1,6 +1,17 @@
+include rdk.inc
+
 DISTRO_FEATURES:append = " dunfell"
+DISTRO_FEATURES:append = " netflix_1080p_graphics"
+DISTRO_FEATURES:append = " cobalt_rialto"
 
 require ${@'rialto_revision_rdk7.inc' if d.getVar('RDK_COMPATIBILITY') == 'rdk7' else 'rialto_revision_latest.inc'}
+
+WPEFRAMEWORK_VERSION = "${@bb.utils.contains('DISTRO_FEATURES', 'wpe_r4_4', '4.4%' , bb.utils.contains('DISTRO_FEATURES', 'wpe_r4', '4.2%', '2.1%', d), d)}"
+PREFERRED_VERSION_wpeframework = "${WPEFRAMEWORK_VERSION}"
+PREFERRED_VERSION_wpeframework-clientlibraries = "${WPEFRAMEWORK_VERSION}"
+PREFERRED_VERSION_wpeframework-interfaces = "${WPEFRAMEWORK_VERSION}"
+PREFERRED_VERSION_wpeframework-tools-native = "${WPEFRAMEWORK_VERSION}"
+EXTRA_VERSIONS_PATH ?= "${TMPDIR}/versions"
 
 BBMASK += "/meta-rdk/"
 BBMASK += "/meta-cmf/(?!recipes-extended|recipes-devtools)"
