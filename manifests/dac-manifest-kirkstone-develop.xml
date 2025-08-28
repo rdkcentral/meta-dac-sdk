@@ -12,9 +12,6 @@
   <remote name="yocto"
          fetch="https://git.yoctoproject.org/"/>
 
-  <remote name="cmf" review="https://code.rdkcentral.com/r/"
-          fetch="https://code.rdkcentral.com/r/"/>
-
   <default remote="github" revision="master" sync-j="32" />
 
   <project remote="github"
@@ -69,11 +66,4 @@
              name="rdkcentral/meta-dac-sdk"
          revision="develop"
              path="meta-dac-sdk"/>
-
-<!--1.1.2-community tag-->
-  <project remote="github"
-             name="rdkcentral/meta-rdk-video"
-         revision="8cc9f62d837e29582664aa545484fc56da1c070f"
-             path="meta-rdk-video"/>
-
 </manifest>
