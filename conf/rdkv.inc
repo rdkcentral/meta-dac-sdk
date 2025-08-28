@@ -45,3 +45,6 @@ BBMASK += "/meta-rdk-netflix/recipes-extended/netflix-thunder-plugin"
 BBMASK += "/meta-rdk-video/recipes-extended/wpe-framework/thunderhangrecovery.bb"
 
 BBMASK += "${@bb.utils.contains('DISTRO_FEATURES', 'igalia-wpe', '/meta-dac-sdk/recipes-extended/cog/', '/meta-webkit/', d)}"
+
+BBFILES += "${LAYERDIR}/meta-dac-image-cobalt/recipes-extended/cobalt/cobalt-evergreen-src_25.lts.stable.bbappend"
+PREFERRED_PROVIDER_virtual/cobalt-evergreen = "${@bb.utils.contains('DISTRO_FEATURES', 'no_pixel_buffer_surfaces', 'cobalt-evergreen-src', 'cobalt-evergreen-pbt', d)}"

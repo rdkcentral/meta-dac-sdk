@@ -9,5 +9,3 @@ DISTRO_FEATURES:append = " enable_icrypto_openssl"
 DISTRO_FEATURES:append = " enable_rialto"
 DISTRO_FEATURES:append = " gstreamer1_18"
 DISTRO_FEATURES:append = " wpe_r4_4"
-
-PREFERRED_PROVIDER_virtual/cobalt-evergreen = "${@bb.utils.contains('DISTRO_FEATURES', 'no_pixel_buffer_surfaces', 'cobalt-evergreen-src', 'cobalt-evergreen-pbt', d)}"
