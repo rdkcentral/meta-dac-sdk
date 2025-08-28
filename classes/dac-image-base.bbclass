@@ -21,12 +21,19 @@ LICENSE = "MIT"
 
 APP_METADATA_PATH = " "
 
+OCI_IMAGE_TAR_OUTPUT=""
+
 IMAGE_CMD:oci:append() {
 
     if [ -n "$image_name" ]; then
         file_name="$image_name.tar"
     else
+        image_name="${IMAGE_NAME}${IMAGE_NAME_SUFFIX}-oci"
         file_name="${IMAGE_NAME}${IMAGE_NAME_SUFFIX}-oci-${OCI_IMAGE_TAG}-${OCI_IMAGE_ARCH}${OCI_IMAGE_SUBARCH:+"-$OCI_IMAGE_SUBARCH"}-linux.oci-image.tar"
+    fi
+
+    if [ -z "${OCI_IMAGE_TAR_OUTPUT}" ]; then
+        tar --sort=name --format=posix --numeric-owner -cf ${file_name} -C ${image_name} .
     fi
 
     ln -fs ${file_name} ${IMAGE_BASENAME}.tar
