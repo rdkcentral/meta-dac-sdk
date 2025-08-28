@@ -7,7 +7,7 @@
 
   <project name="meta-virtualization" path="meta-virtualization" remote="yocto" upstream="kirkstone" revision="3e4dba95e6b5f5f68d0b3a5899b106c89da59428"/>
   <project name="Igalia/meta-webkit"  path="meta-dac-sdk/meta-dac-image-wpe/meta-webkit" remote="github" upstream="kirkstone" revision="8380d0488a3a28241698389e954f1ac6a035f096"/>
-  <project name="meta-dac-sdk" path="meta-dac-sdk" remote="rdkcentral" revision="d1625012694b68d6a23001839b493b20ea7d2939">
+  <project name="meta-dac-sdk" path="meta-dac-sdk" remote="rdkcentral" revision="676864cae7110f2b29d7bc87a81082634cb9c19b">
     <linkfile src="meta-dac-image-wpe" dest="meta-dac-image"/>
   </project>
 </manifest>
