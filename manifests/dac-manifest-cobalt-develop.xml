@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <include name="manifests/dac-manifest-cobalt.xml"/>
+
+  <extend-project name="meta-dac-sdk" revision="develop"/>
+</manifest>

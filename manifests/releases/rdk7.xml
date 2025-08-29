@@ -12,4 +12,6 @@
   <project name="meta-middleware-generic-support" path="rdke/middleware/generic/meta-middleware-generic-support" remote="rdkcentral" revision="refs/tags/1.1.2-community"/>
   <project name="meta-rdk" path="rdke/middleware/generic/meta-rdk" remote="rdkcentral" revision="refs/tags/1.1.2-community"/>
   <project name="meta-rdk-video" path="rdke/middleware/generic/meta-rdk-video" remote="rdkcentral" revision="refs/tags/1.1.2-community"/>
+
+  <project name="meta-application-rdke-dev" path="rdke/application/meta-application-rdke-dev" remote="rdkcentral" revision="refs/tags/4.1.6"/>
 </manifest>
