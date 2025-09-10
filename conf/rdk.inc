@@ -2,7 +2,8 @@
 #DISTRO_FEATURES:append = " no_pixel_buffer_surfaces"
 
 # Enable YouTube 2025 support in Evergreen model
-DISTRO_FEATURES:append = " cobalt_enable_evergreen_lite"
+# This will enable evergreen lite.
+#DISTRO_FEATURES:append = " cobalt_enable_evergreen_lite"
 
 DISTRO_FEATURES:append = " cobalt-25"
 DISTRO_FEATURES:append = " enable_icrypto_openssl"
